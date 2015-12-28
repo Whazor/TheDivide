@@ -38,8 +38,8 @@ module TD {
     var angle = Math.random() * 2*Math.PI;
 
     var pos2 = new TD.Position();
-    pos2.x = 300*Math.sin(angle);
-    pos2.y = 300*Math.cos(angle);
+    pos2.x = pos.x + 300*Math.sin(angle);
+    pos2.y = pos.y + 300*Math.cos(angle);
 
     var line = new TD.Line();
     line.point1 = pos;
