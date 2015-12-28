@@ -2,6 +2,7 @@ module TD {
   export function aboveLine(line: TD.Line, thing: TD.Position&TD.BoundingBox): boolean {
     // Do Sander things
 
+
     return true;
   }
 
@@ -12,14 +13,19 @@ module TD {
     return pos;
   }
 
-  export function randomLine(width:number, height:number): TD.Line {
-    var pos = randomPosition(width, height);
+  export function randomLineTroughCenter(width:number, height:number): TD.Line {
+    //Creates a random line trough the center of the box with given dimensions
+
+
+    var pos = randomPosition(width/2, height/2);
+    pos.x += .25*width
+    pos.y += .25*height
 
     var angle = Math.random() * 2*Math.PI;
 
     var pos2 = new TD.Position();
-    pos2.x = 1337;
-    pos2.y = 1337;
+    pos2.x = 300*Math.sin(angle);
+    pos2.y = 300*Math.cos(angle);
 
     var line = new TD.Line();
     line.point1 = pos;
