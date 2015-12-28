@@ -36,6 +36,13 @@ def CREATE POINTS(n)
 ```python
 def OBSFUCATEPOINTS(n):
   # Swaps n points
+  Repeat the following n times
+  1. Randomly select a category mages,archers, swordsmen.
+  2.randomly slect a point in this category
+  3. Randomly select a disjoint category (ie mages or swordsmen when archers was selected by 1) 
+      #NB this can be done by adding 1 or 2 to the category number of the first selected category
+  4. randomly select a point from this category
+  5. swap these points
 ```
 
 ```python
@@ -43,4 +50,7 @@ def FINDCUT(soldierlocations):
   # Finds wheter there is is an cut divding mages archers and swordsmen in two
   # equal parts. If there is such a cut we return the line giving such a cut otherwise
   # we return null
+  1. Dualize the problem
+  2. ???
+  3. Profit
 ```
