@@ -1,4 +1,7 @@
 module TD {
+  export var width: number;
+  export var height: number;
+
   export class Game {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
@@ -8,10 +11,14 @@ module TD {
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
+      
+      TD.width = this.canvas.width;
+      TD.height = this.canvas.height;
 
       var soldier = new TD.Soldier();
 
       var line = TD.randomLine(this.canvas.width, this.canvas.height);
+
       this.things = TD.createArmy(10, line);
 
       this.draw();

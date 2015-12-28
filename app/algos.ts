@@ -1,8 +1,8 @@
 module TD {
-  export function aboveLine(line: TD.Line, thing: TD.Position&TD.BoundingBox): boolean {
+  export function aboveLine(line: TD.Line, thing: TD.Position): boolean {
     // Do Sander things
 
-    return true;
+    return Math.random() > 0.5;
   }
 
   export function randomPosition(width:number, height:number): TD.Position {
@@ -27,19 +27,34 @@ module TD {
     return line;
   }
 
-  export function createArmy(n: number, line: TD.Line): Array<Position&BoundingBox&Draw> {
-    var things: Array<Position&BoundingBox&Draw> = [];
+  export function createArmy(n: number, line: TD.Line): Array<Position> {
+    var things: Array<Position> = [];
 
     // Do Sander things
+    var points_above = [];
+    var points_below = [];
 
+    while (points_above.length < n/2 || points_below.length < n/2) {
+      var pos = randomPosition(TD.width, TD.height);
 
-    return things;
+      if (aboveLine(line, pos)) {
+        if (points_above.length < n/2) {
+          points_above.push(pos);
+        }
+      } else {
+        if (points_below.length < n/2) {
+          points_below.push(pos);
+        }
+      }
+    }
+
+    return points_above.concat(points_below);
   }
 
   // def OBSFUCATEPOINTS(n):
   // # Swaps n points
 
-  export function findCut(army: Array<Position&BoundingBox>): Line {
+  export function findCut(army: Array<Position&BoundingBox>): TD.Line {
     return null;
   }
 }
