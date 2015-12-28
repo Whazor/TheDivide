@@ -5,6 +5,7 @@ module TD {
     width: number;
     height: number;
     image: HTMLImageElement;
+    selected = false;
 
     constructor(pos: TD.Position) {
       this.width = 30;
@@ -17,9 +18,13 @@ module TD {
     }
     draw(ctx) {
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      if (this.selected) {
+        ctx.rect(this.x,this.y,this.width, this.height);
+        ctx.stroke();
+      }
     };
     select() {
-      
+      this.selected = !this.selected;
     }
   }
 }

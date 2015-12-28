@@ -9,7 +9,7 @@ module TD {
     }
 
     constains(point: number): boolean {
-      return this.start >= point && this.end <= point;
+      return this.start <= point && this.end >= point;
     }
   }
 }

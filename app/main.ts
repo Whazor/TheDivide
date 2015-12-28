@@ -36,14 +36,9 @@ module TD {
       }
 
       this.draw();
-      var i = 0;
       var bla = this;
       this.canvas.onclick = function(e) {
-        i++;
-        console.log("test123 " + i);
-        if (i % 2 == 0){
-          bla.click(e);
-        }
+        bla.click(e);
       }
     }
 
@@ -65,14 +60,16 @@ module TD {
       }
     }
     click(e: MouseEvent) {
+      var mouseX = e.clientX - this.canvas.getBoundingClientRect().left;
+      var mouseY = e.clientY - this.canvas.getBoundingClientRect().top;
+
       for (let i = 0; i < this.things.length; i++) {
         var thing = this.things[i];
 
-        var xRange = new Range(thing.x, thing.x + width);
-        var yRange = new Range(thing.y, thing.y + height);
-        console.log("test123");
-        if(xRange.constains(e.clientX) && xRange.constains(e.clientY)) {
-          // thing.click();
+        var xRange = new TD.Range(thing.x, thing.x + thing.width);
+        var yRange = new TD.Range(thing.y, thing.y + thing.height);
+
+        if (xRange.constains(mouseX) && yRange.constains(mouseY)) {
           thing.select();
           break;
         }
