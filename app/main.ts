@@ -17,14 +17,23 @@ module TD {
 
       var line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
 
-      var possies = TD.createArmy(10, line);
+      var n = 10;
 
+      var possies = TD.createArmy(n, line);
       for (let i = 0; i < possies.length; i++) {
-          var pos = possies[i];
-          
-          var soldier = new TD.Soldier(pos);
-          this.things.push(soldier);
+          this.things.push(new TD.Soldier(possies[i]));
       }
+
+      var possies = TD.createArmy(n, line);
+      for (let i = 0; i < possies.length; i++) {
+          this.things.push(new TD.Mage(possies[i]));
+      }
+
+      var possies = TD.createArmy(n, line);
+      for (let i = 0; i < possies.length; i++) {
+          this.things.push(new TD.Archer(possies[i]));
+      }
+
       this.draw();
       this.canvas.onclick = function(e) {
         this.click(e);
