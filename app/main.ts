@@ -15,20 +15,17 @@ module TD {
 
 
       this.draw();
-      // this.canvas.onclick = function(e) {
-      //   this.click(e);
-      // }
+      this.canvas.onclick = function(e) {
+        this.click(e);
+      }
     }
 
     draw() {
-      // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+      var image = <HTMLImageElement>document.getElementById("imgBackground");
+      this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
-      // this.ctx.moveTo(0,0);
-      // this.ctx.lineTo(200,100);
-      // this.ctx.stroke();
-      var soldier = new TD.Soldier()
-      soldier.draw(this.ctx);
 
       // draw all the things
       for (let i = 0; i < this.things.length; i++) {
@@ -37,8 +34,7 @@ module TD {
       }
     }
     click(e: MouseEvent) {
-
-      // this.draw();
+      this.draw();
     }
   }
 }

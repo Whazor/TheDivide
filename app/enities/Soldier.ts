@@ -15,7 +15,6 @@ module TD {
       this.image = <HTMLImageElement>document.getElementById("imgSoldier");
     }
     draw(ctx) {
-      var div = <HTMLImageElement>document.getElementById("imgSoldier");
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     };
   }
