@@ -11,15 +11,28 @@ module TD {
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
-      
+
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
 
-      var soldier = new TD.Soldier();
+      var line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
 
-      var line = TD.randomLine(this.canvas.width, this.canvas.height);
+      var n = 10;
 
-      this.things = TD.createArmy(10, line);
+      var possies = TD.createArmy(n, line);
+      for (let i = 0; i < possies.length; i++) {
+          this.things.push(new TD.Soldier(possies[i]));
+      }
+
+      var possies = TD.createArmy(n, line);
+      for (let i = 0; i < possies.length; i++) {
+          this.things.push(new TD.Mage(possies[i]));
+      }
+
+      var possies = TD.createArmy(n, line);
+      for (let i = 0; i < possies.length; i++) {
+          this.things.push(new TD.Archer(possies[i]));
+      }
 
       this.draw();
       this.canvas.onclick = function(e) {

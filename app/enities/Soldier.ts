@@ -6,11 +6,12 @@ module TD {
     height: number;
     image: HTMLImageElement;
 
-    constructor() {
-      this.x = 100;
-      this.y = 100;
+    constructor(pos: TD.Position) {
       this.width = 30;
       this.height = 30;
+
+      this.x = pos.x - Math.floor(this.width / 2);
+      this.y = pos.y - Math.floor(this.height / 2);
 
       this.image = <HTMLImageElement>document.getElementById("imgSoldier");
     }
