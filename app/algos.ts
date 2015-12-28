@@ -14,6 +14,8 @@ module TD {
       var highxpoint = line.point1
     }
     var rc= (highxpoint.y - lowxpoint.y) / (highxpoint.x -lowxpoint.x)
+    console.log("line", line, "rc", rc)
+
     var deltax = pointx - lowxpoint.x
     var liney = lowxpoint.y + deltax * rc
 
@@ -72,7 +74,7 @@ module TD {
   }
 
   // def OBSFUCATEPOINTS(n):
-  // # Swaps n points
+  // # Swaps two points n times
 
   export function findCut(army: Array<Position&BoundingBox>): TD.Line {
     return null;

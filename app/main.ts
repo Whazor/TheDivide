@@ -16,21 +16,21 @@ module TD {
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
 
-      this.line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
+      var line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
 
       var n = 10;
 
-      var possies = TD.createArmy(n, this.line);
+      var possies = TD.createArmy(n, line);
       for (let i = 0; i < possies.length; i++) {
           this.things.push(new TD.Soldier(possies[i]));
       }
 
-      var possies = TD.createArmy(n, this.line);
+      var possies = TD.createArmy(n, line);
       for (let i = 0; i < possies.length; i++) {
           this.things.push(new TD.Mage(possies[i]));
       }
 
-      var possies = TD.createArmy(n, this.line);
+      var possies = TD.createArmy(n, line);
       for (let i = 0; i < possies.length; i++) {
           this.things.push(new TD.Archer(possies[i]));
       }
