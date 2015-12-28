@@ -11,8 +11,8 @@ module TD {
 
       var soldier = new TD.Soldier();
 
-      this.things.push(soldier);
-
+      var line = TD.randomLine(this.canvas.width, this.canvas.height);
+      this.things = TD.createArmy(10, line);
 
       this.draw();
       this.canvas.onclick = function(e) {
