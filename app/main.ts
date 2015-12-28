@@ -1,28 +1,25 @@
-module Game {
-  var c = <HTMLCanvasElement> document.getElementById("canvas");
-  export function draw() {
+class Game {
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  constructor() {
+    this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
+    this.ctx = this.canvas.getContext("2d");
+    this.draw();
+  }
 
-    var ctx = c.getContext("2d");
-    ctx.moveTo(0,0);
-    ctx.lineTo(200,100);
-    ctx.stroke();
+  draw() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.ctx.moveTo(0,0);
+    this.ctx.lineTo(200,100);
+    this.ctx.stroke();
+  }
+  click() {
 
   }
 }
 
 
 $(function(){
-
-  var c = <HTMLCanvasElement> document.getElementById("canvas");
-  var ctx = c.getContext("2d");
-  ctx.moveTo(0,0);
-  ctx.lineTo(200,100);
-  ctx.stroke();
-
-  setTimeout(function(){
-    ctx.moveTo(100,100);
-    ctx.lineTo(200,100);
-    ctx.stroke();
-  }, 1000);
-
+  new Game();
 });
