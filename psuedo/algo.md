@@ -36,7 +36,7 @@ def CREATE POINTS(n)
 ```python
 def OBSFUCATEPOINTS(n):
   # Swaps n points
-``
+```
 
 ```python
 def FINDCUT(soldierlocations):
