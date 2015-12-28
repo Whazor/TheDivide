@@ -17,7 +17,7 @@ module TD {
     var deltax = pointx - lowxpoint.x
     var liney = lowxpoint.y + deltax * rc
 
-    return (point.y>liney)
+    return (point.y>liney);
   }
 
   export function randomPosition(width:number, height:number): TD.Position {

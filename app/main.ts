@@ -20,24 +20,30 @@ module TD {
 
       var n = 10;
 
-      var possies = TD.createArmy(n, this.line);
-      for (let i = 0; i < possies.length; i++) {
-          this.things.push(new TD.Soldier(possies[i]));
+      var possies1 = TD.createArmy(n, this.line);
+      for (let i = 0; i < possies1.length; i++) {
+          this.things.push(new TD.Soldier(possies1[i]));
       }
 
-      var possies = TD.createArmy(n, this.line);
-      for (let i = 0; i < possies.length; i++) {
-          this.things.push(new TD.Mage(possies[i]));
+      var possies2 = TD.createArmy(n, this.line);
+      for (let i = 0; i < possies2.length; i++) {
+          this.things.push(new TD.Mage(possies2[i]));
       }
 
-      var possies = TD.createArmy(n, this.line);
-      for (let i = 0; i < possies.length; i++) {
-          this.things.push(new TD.Archer(possies[i]));
+      var possies3 = TD.createArmy(n, this.line);
+      for (let i = 0; i < possies3.length; i++) {
+          this.things.push(new TD.Archer(possies3[i]));
       }
 
       this.draw();
+      var i = 0;
+      var bla = this;
       this.canvas.onclick = function(e) {
-        this.click(e);
+        i++;
+        console.log("test123 " + i);
+        if (i % 2 == 0){
+          bla.click(e);
+        }
       }
     }
 
@@ -59,6 +65,19 @@ module TD {
       }
     }
     click(e: MouseEvent) {
+      for (let i = 0; i < this.things.length; i++) {
+        var thing = this.things[i];
+
+        var xRange = new Range(thing.x, thing.x + width);
+        var yRange = new Range(thing.y, thing.y + height);
+        console.log("test123");
+        if(xRange.constains(e.clientX) && xRange.constains(e.clientY)) {
+          // thing.click();
+          thing.select();
+          break;
+        }
+      }
+
       this.draw();
     }
   }
