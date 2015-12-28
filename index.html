@@ -9,20 +9,35 @@
     <!-- components -->
     <script src="app/components/BoundingBox.js" charset="utf-8"></script>
     <script src="app/components/Position.js" charset="utf-8"></script>
-    <script src="app/components/Spriter.js" charset="utf-8"></script>
+    <script src="app/components/Sprite.js" charset="utf-8"></script>
+    <script src="app/components/Draw.js" charset="utf-8"></script>
 
     <!-- entities -->
     <script src="app/enities/Archer.js" charset="utf-8"></script>
     <script src="app/enities/Soldier.js" charset="utf-8"></script>
     <script src="app/enities/Mage.js" charset="utf-8"></script>
-
+    <script src="app/main.js" charset="utf-8"></script>
   </head>
   <body>
+
+
+    <div id="loadscreen" style="background-color: white; position:absolute; width: 500px; height: 200px; padding: 250px; border: 1px solid black;">
+      Loading:
+      <div style="width: 500px; height: 40px; border: 1px solid;">
+        <div id="bar" style="width: 0%; height: 100%; background-color: blue"></div>
+      </div>
+    </div>
 
     <canvas id="canvas" width="1000" height="700" style="border:1px solid #000000;">
 
     </canvas>
 
-    <script src="app/main.js" charset="utf-8"></script>
+        <div style="display:none">
+          <img id="imgSoldier" class="image" src="img/soldier.svg">
+          <img id="imgArcher" class="image" src="img/archer.svg">
+          <img id="imgMage" class="image" src="img/mage.svg">
+          <img id="imgBackground" class="image" src="img/Background-Scene.jpg" />
+        </div>
+
   </body>
 </html>
