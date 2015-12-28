@@ -19,7 +19,7 @@ module TD {
     var deltax = pointx - lowxpoint.x
     var liney = lowxpoint.y + deltax * rc
 
-    return (point.y>liney);
+    return (point.y<liney); //< instead of > to take care of inverted y-axis
   }
 
   export function randomPosition(width:number, height:number): TD.Position {
