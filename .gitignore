@@ -1,0 +1,7 @@
+app/**/*.js
+app/**/*.js.map
+node_modules
+dist
+.tmp
+.sass-cache
+bower_components
