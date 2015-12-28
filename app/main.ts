@@ -7,6 +7,7 @@ module TD {
     ctx: CanvasRenderingContext2D;
 
     things: Array<Position&BoundingBox&Draw> = [];
+    line: Line;
 
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
@@ -15,21 +16,21 @@ module TD {
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
 
-      var line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
+      this.line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
 
       var n = 10;
 
-      var possies = TD.createArmy(n, line);
+      var possies = TD.createArmy(n, this.line);
       for (let i = 0; i < possies.length; i++) {
           this.things.push(new TD.Soldier(possies[i]));
       }
 
-      var possies = TD.createArmy(n, line);
+      var possies = TD.createArmy(n, this.line);
       for (let i = 0; i < possies.length; i++) {
           this.things.push(new TD.Mage(possies[i]));
       }
 
-      var possies = TD.createArmy(n, line);
+      var possies = TD.createArmy(n, this.line);
       for (let i = 0; i < possies.length; i++) {
           this.things.push(new TD.Archer(possies[i]));
       }
@@ -46,6 +47,10 @@ module TD {
       var image = <HTMLImageElement>document.getElementById("imgBackground");
       this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.line.point1.x, this.line.point1.y);
+      this.ctx.lineTo(this.line.point2.x, this.line.point2.y);
+      this.ctx.stroke();
 
       // draw all the things
       for (let i = 0; i < this.things.length; i++) {
