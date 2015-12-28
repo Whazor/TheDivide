@@ -1,8 +1,23 @@
 module TD {
-  export function aboveLine(line: TD.Line, thing: TD.Position): boolean {
-    // Do Sander things
+  export function aboveLine(line: TD.Line, point: TD.Position): boolean {
+    //Returns true when point is above line
+    var pointx = point.x
+    if (line.point1.x == line.point2.x){
+      //TODO Vertical line, do stuff
+    }
 
-    return Math.random() > 0.5;
+    if (line.point1.x < line.point2.x){
+      var lowxpoint = line.point1
+      var highxpoint = line.point2
+    }else{
+      var lowxpoint = line.point2
+      var highxpoint = line.point1
+    }
+    var rc= (highxpoint.y - lowxpoint.y) / (highxpoint.x -lowxpoint.x)
+    var deltax = pointx - lowxpoint.x
+    var liney = lowxpoint.y + deltax * rc
+
+    return (point.y>liney)
   }
 
   export function randomPosition(width:number, height:number): TD.Position {
