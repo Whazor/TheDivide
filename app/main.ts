@@ -9,7 +9,7 @@ module TD {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
 
-      var soldier = new TD.Soldier()
+      var soldier = new TD.Soldier();
 
       this.things.push(soldier);
 
