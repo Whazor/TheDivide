@@ -40,13 +40,6 @@ module TD {
       this.canvas.onclick = function(e) {
         bla.click(e);
       }
-
-      //handler for testing findCut
-      document.onkeydown = function(event){
-        console.log("Keydown")
-        console.log(bla.things)
-        findCut(bla.things);
-      };
     }
 
     draw() {
