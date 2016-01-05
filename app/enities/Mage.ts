@@ -9,8 +9,8 @@ module TD {
     selected = false;
 
     constructor(pos: TD.Position) {
-      this.width = 30;
-      this.height = 30;
+      this.width = 50;
+      this.height = 50;
 
       this.x = pos.x - Math.floor(this.width / 2);
       this.y = pos.y - Math.floor(this.height / 2);
