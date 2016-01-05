@@ -40,6 +40,13 @@ module TD {
       this.canvas.onclick = function(e) {
         bla.click(e);
       }
+
+      //handler for testing findCut
+      document.onkeydown = function(event){
+        console.log("Keydown")
+        console.log(bla.things)
+        findCut(bla.things);
+      };
     }
 
     draw() {
@@ -90,6 +97,7 @@ module TD {
 
     onSelected() {
       if (this.selected.size() == 2) {
+        //swap
         var arr = this.selected.toArray();
         var first = arr[0];
         var second = arr[1];
@@ -103,6 +111,10 @@ module TD {
         first.select(false);
         second.select(false);
         this.selected.clear();
+
+        //find a cut
+        console.log("findCut")
+        findCut(this.things);
       }
     }
   }
