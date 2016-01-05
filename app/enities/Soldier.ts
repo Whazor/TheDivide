@@ -1,5 +1,6 @@
 module TD {
-  export class Soldier implements TD.Position, TD.BoundingBox, TD.Draw {
+  export class Soldier implements TD.Entity {
+    type = EntityType.Soldier;
     x: number;
     y: number;
     width: number;
@@ -23,8 +24,11 @@ module TD {
         ctx.stroke();
       }
     };
-    select() {
-      this.selected = !this.selected;
+    select(selected:boolean) {
+      this.selected = selected;
+    }
+    toString() {
+      return this.x + '-' + this.y + '-' + this.type;
     }
   }
 }

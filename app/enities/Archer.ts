@@ -1,5 +1,6 @@
 module TD {
-  export class Archer implements TD.Position, TD.BoundingBox, TD.Draw {
+  export class Archer implements TD.Entity {
+    type = TD.EntityType.Archer;
     x: number;
     y: number;
     width: number;
@@ -23,8 +24,11 @@ module TD {
         ctx.stroke();
       }
     };
-    select() {
-      this.selected = !this.selected;
+    select(selected:boolean) {
+      this.selected = selected;
+    }
+    toString() {
+      return this.x + '-' + this.y + '-' + this.type;
     }
   }
 }

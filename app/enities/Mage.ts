@@ -1,5 +1,6 @@
 module TD {
-  export class Mage implements TD.Position, TD.BoundingBox, TD.Draw {
+  export class Mage implements TD.Entity {
+    type = EntityType.Mage;
     x: number;
     y: number;
     width: number;
@@ -23,8 +24,11 @@ module TD {
         ctx.stroke();
       }
     };
-    select() {
-      this.selected = !this.selected;
+    select(selected:boolean) {
+      this.selected = selected;
+    }
+    toString() {
+      return this.x + '-' + this.y + '-' + this.type;
     }
   }
 }

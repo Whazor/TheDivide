@@ -6,7 +6,7 @@ module TD {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 
-    things: Array<Position&BoundingBox&Draw> = [];
+    things: Array<Entity> = [];
     line: Line;
 
     constructor() {
@@ -59,6 +59,9 @@ module TD {
           thing.draw(this.ctx);
       }
     }
+
+    selected = new collections.Set<Entity>();
+
     click(e: MouseEvent) {
       var mouseX = e.clientX - this.canvas.getBoundingClientRect().left;
       var mouseY = e.clientY - this.canvas.getBoundingClientRect().top;
@@ -70,12 +73,37 @@ module TD {
         var yRange = new TD.Range(thing.y, thing.y + thing.height);
 
         if (xRange.constains(mouseX) && yRange.constains(mouseY)) {
-          thing.select();
+          if (this.selected.contains(thing)) {
+            this.selected.remove(thing);
+            thing.select(false);
+          } else {
+            this.selected.add(thing);
+            thing.select(true);
+          }
+          this.onSelected();
           break;
         }
       }
 
       this.draw();
+    }
+
+    onSelected() {
+      if (this.selected.size() == 2) {
+        var arr = this.selected.toArray();
+        var first = arr[0];
+        var second = arr[1];
+        var a, b;
+        a = first.x;
+        b = first.y;
+        first.x = second.x;
+        first.y = second.y;
+        second.x = a;
+        second.y = b;
+        first.select(false);
+        second.select(false);
+        this.selected.clear();
+      }
     }
   }
 }

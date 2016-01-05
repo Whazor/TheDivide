@@ -1,6 +1,6 @@
 module TD {
   export interface Draw {
     draw(ctx:CanvasRenderingContext2D);
-    select();
+    select(selected:boolean);
   }
 }
