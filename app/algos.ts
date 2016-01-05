@@ -76,7 +76,7 @@ module TD {
   // def OBSFUCATEPOINTS(n):
   // # Swaps two points n times
 
-  export function findCut(army: Array<Position&BoundingBox>): TD.Line {
+  export function findCut(army: Array<Entity>): TD.Line {
     return null;
   }
 }
