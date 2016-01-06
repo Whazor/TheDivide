@@ -18,7 +18,7 @@ module TD {
 
       this.line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
 
-      var n = 10;
+      var n = 3;
 
       var possies1 = TD.createArmy(n, this.line);
       for (let i = 0; i < possies1.length; i++) {
@@ -33,6 +33,15 @@ module TD {
       var possies3 = TD.createArmy(n, this.line);
       for (let i = 0; i < possies3.length; i++) {
           this.things.push(new TD.Archer(possies3[i]));
+      }
+
+      var swaps = 1;
+      for (let i = 0; i < swaps; i++) {
+          var s1 = Math.floor(Math.random() * n*3);
+          var s2 = Math.floor(Math.random() * n*3);
+          var first = this.things[s1];
+          var second = this.things[s2];
+          TD.swap(first, second);
       }
 
       this.draw();
@@ -94,13 +103,9 @@ module TD {
         var arr = this.selected.toArray();
         var first = arr[0];
         var second = arr[1];
-        var a, b;
-        a = first.x;
-        b = first.y;
-        first.x = second.x;
-        first.y = second.y;
-        second.x = a;
-        second.y = b;
+
+        TD.swap(first, second);
+
         first.select(false);
         second.select(false);
         this.selected.clear();
