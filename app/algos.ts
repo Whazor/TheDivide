@@ -10,6 +10,13 @@ module TD {
     incidentEdge: Halfedge //Some Halfedge leaving this vertex
   }
 
+  class AlgoBoundingBox{
+    minx:number
+    maxx:number
+    miny:number
+    maxy:number
+  }
+
   class Halfedge{
     fromvertex: Vertex
     tovertex: Vertex
@@ -140,6 +147,10 @@ module TD {
   }
 
   function dualizePoints(points: Array<Position>): Array<AlgoLine>{
+    if (points.length===0){
+      throw Error("Request to dualize 0 points")
+    }
+    console.log(points)
     var result: Array<AlgoLine> =[];
     for(var i = 0; i<points.length; i++){
       var pos: Position = points[i];
@@ -152,9 +163,50 @@ module TD {
   }
 
     function makearrangement(lines: Array<AlgoLine>): DCEL{
-      //incremental construction form slides 8.46 and further
+      function findBoundingBox(lines: Array<AlgoLine>): AlgoBoundingBox{
+        if (lines.length < 2 ){
+          throw Error("Not enough lines provided")
+        }
+        var sortedLines = lines.sort(function(line1:AlgoLine, line2:AlgoLine){return line1.slope- line2.slope})
 
+        var point = intersectLines(sortedLines[0],sortedLines[1]);
+        var result = new AlgoBoundingBox
+        result.minx=point.x;
+        result.maxx=point.x;
+        result.miny=point.y;
+        result.maxy=point.y;
+
+        //Outermost (in both x and y) intersections are between lines of adjecent slope
+        for(var i = 1; i<sortedLines.length-1 ; i++){
+          var candidatepoint = intersectLines(sortedLines[0],sortedLines[1])
+
+          if (candidatepoint.x < result.minx ){
+            result.minx=candidatepoint.x
+          } else if (candidatepoint.x > result.maxx){
+            result.maxx = candidatepoint.x
+          }
+
+          if (candidatepoint.y < result.minx ){
+            result.minx=candidatepoint.y
+          } else if (candidatepoint.y > result.maxx){
+            result.maxx = candidatepoint.y
+          }
+
+        }
+
+        //relax bounding box a little (such that no intersections are actually on the boundinBox)
+        result.minx = result.minx - 10;
+        result.maxx = result.maxx + 10;
+        result.miny = result.miny - 10;
+        result.maxy = result.maxy + 10
+        return result;
+        }
+
+      //first find BoundingBox
+      var boundinBox:AlgoBoundingBox = findBoundingBox(lines);
+      //incremental construction form slides 8.46 and further
       //TODO
+
       return null;
     }
 
@@ -163,15 +215,14 @@ module TD {
       // cutting a given army in two equal parts in the primal plane.
 
       //TODO
-      return null
-    }
+      throw Error("findFeasibleRegion not yet implemented" )    }
 
     function findPointInRegions(region1: Array<Face>, region2: Array<Face>, region3: Array<Face>): Position{
       //returns a point in all 3 regions, or null when this is impossible
 
+      throw Error("findPointInRegions not yet implemented" )
       //TODO
-      return null;
-    }
+      }
 
     function dualizePoint(point: Position):Line{
       var algoLine:AlgoLine = dualizePoints([point])[0];
@@ -188,4 +239,15 @@ module TD {
       line.point2 = pos2;
       return line;
     }
+
+    //Small Geometric methods
+    function intersectLines(line1: AlgoLine, line2: AlgoLine): Position{
+      var result = new Position();
+      var dy = line1.heightatyaxis - line2.heightatyaxis;
+      var comparitiveslope = line1.slope - line2.slope
+      result.x = -dy/comparitiveslope;
+      result.y = line1.heightatyaxis + result.x *line1.slope;
+      return result;
+    }
+
 }
