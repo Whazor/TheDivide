@@ -8,6 +8,12 @@ module TD {
   //Clases for DCEL
   class Vertex extends Position{
     incidentEdge: Halfedge //Some Halfedge leaving this vertex
+
+    constructor(x, y){
+      super()
+      this.x =x
+      this.y =y
+    }
   }
 
   class AlgoBoundingBox{
@@ -24,18 +30,28 @@ module TD {
     prev: Halfedge
     next: Halfedge
     incidentFace: Face //the unique incident face
+
+    constructor(fromvertex, tovertex){
+      this.fromvertex=fromvertex
+      this.tovertex=tovertex
+    }
   }
 
   class Face{
     outerComponent: Halfedge
     //innerComponents: Array<Halfedge> Not nessecary in our case (Line arrangment)
+
+    constructor(outerComponent){
+      this.outerComponent = outerComponent
+    }
   }
 
   class DCEL{
+    constructor(public vertices:Array<Vertex>, public edges:Array<Halfedge>, public faces:Array<Face>){
+
+    }
     //Q: Is the overarching structure necesarry?
-    faces: Array<Face>
-    edges: Array<Halfedge>
-    vertices: Array<Vertex>
+
   }
   //End Clases for DCEL
 
@@ -202,8 +218,38 @@ module TD {
         return result;
         }
 
+      function initialDCELfromBoundingBox(bBox:AlgoBoundingBox):DCEL{
+        var topleft = new Vertex(bBox.minx, bBox.maxy)
+        var topright = new Vertex(bBox.maxx, bBox.maxy)
+        var downleft = new Vertex(bBox.minx, bBox.miny)
+        var downright = new Vertex(bBox.maxx, bBox.miny)
+
+        var vertices = new Array(topleft, topright, downright, downleft)
+
+        var interiorEdges = createClokWiseCycle(vertices)
+        var outerEdges  = createClokWiseCycle(vertices.reverse())
+
+        //now twin them
+        var lastinedge= interiorEdges[interiorEdges.length-1]
+        var lastoutedge = outerEdges[outerEdges.length-1]
+
+        twin(lastinedge, lastoutedge)
+
+        var workingedge = lastinedge.next
+        while (workingedge !== lastinedge){
+          var twintobe = workingedge.prev.twin.prev
+          twin(workingedge, twintobe)
+          workingedge = workingedge.next
+        }
+
+        return new DCEL(vertices,
+          interiorEdges.concat(outerEdges),
+           [lastinedge.incidentFace, lastoutedge.incidentFace])
+      }
       //first find BoundingBox
-      var boundinBox:AlgoBoundingBox = findBoundingBox(lines);
+      var boundinBox:AlgoBoundingBox = findBoundingBox(lines)
+      console.log ("BoundingBox", boundinBox)
+      var graph:DCEL = initialDCELfromBoundingBox(boundinBox)
       //incremental construction form slides 8.46 and further
       //TODO
 
@@ -250,4 +296,46 @@ module TD {
       return result;
     }
 
+    //DCEL help functions
+    function createClokWiseCycle(vertices: Array<Vertex>):Array<Halfedge>{
+      var i
+      //returns all Halfedges in the cycle, the newly created interior face is then easaliy found
+      //all properties are set except for
+      var edges:Array<Halfedge>=[]
+
+      for(i = 0; i < vertices.length-1; i++){
+        edges.push(new Halfedge(vertices[i], vertices[i+1]))
+      }
+      edges.push(new Halfedge(vertices[vertices.length-1], vertices[0]))
+
+      var face = new Face(edges[0])
+
+      //set aditional properties
+      edges[0].prev =edges[edges.length-1]
+      edges[0].next =edges[1]
+      edges[0].incidentFace = face
+      for(i=1; i < edges.length -1; i++){
+        edges[i].prev = edges[i-1]
+        edges[i].next = edges[i+1]
+        edges[i].incidentFace =face
+      }
+      edges[edges.length-1].prev = edges[edges.length-1]
+      edges[edges.length-1].next = edges[0]
+      edges[edges.length-1].incidentFace = face
+
+
+      return edges
+    }
+
+    function twin(edge1:Halfedge, edge2:Halfedge):void{
+      //Twins two edges to each other
+      if(!(edge1.twin===undefined && edge2.twin===undefined)){
+        Error("One or more twins already defined")
+      }
+      if(!(edge1.fromvertex === edge2.tovertex && edge1.tovertex === edge2.fromvertex)){
+        Error("These edges can't be twins")
+      }
+      edge1.twin=edge2
+      edge2.twin=edge1
+    }
 }
