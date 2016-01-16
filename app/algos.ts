@@ -46,12 +46,19 @@ module TD {
     }
   }
 
-  class DCEL{
-    constructor(public vertices:Array<Vertex>, public edges:Array<Halfedge>, public faces:Array<Face>){
+  class PositionOnEdge{
+    pos:Position
+    edge:Halfedge
 
+    constructor(pos, edge){
+      this.pos = pos
+      this.edge = edge
     }
-    //Q: Is the overarching structure necesarry?
+  }
 
+  class DCEL{
+    constructor(public vertices:Array<Vertex>, public edges:Array<Halfedge>, public faces:Array<Face>, public outerface:Face){    }
+    //Q: Is the overarching structure necesarry?
   }
   //End Clases for DCEL
 
@@ -127,9 +134,6 @@ module TD {
     return points_above.concat(points_below);
   }
 
-  // def OBSFUCATEPOINTS(n):
-  // # Swaps two points n times
-
   export function findCut(army: Array<Entity>): TD.Line {
     var archerarmy: Array<Archer> = [];
     var soldierarmy: Array<Soldier> = [];
@@ -178,83 +182,129 @@ module TD {
     return result;
   }
 
-    function makearrangement(lines: Array<AlgoLine>): DCEL{
-      function findBoundingBox(lines: Array<AlgoLine>): AlgoBoundingBox{
-        if (lines.length < 2 ){
-          throw Error("Not enough lines provided")
-        }
-        var sortedLines = lines.sort(function(line1:AlgoLine, line2:AlgoLine){return line1.slope- line2.slope})
+  function makearrangement(lines: Array<AlgoLine>): DCEL{
 
-        var point = intersectLines(sortedLines[0],sortedLines[1]);
-        var result = new AlgoBoundingBox
-        result.minx=point.x;
-        result.maxx=point.x;
-        result.miny=point.y;
-        result.maxy=point.y;
-
-        //Outermost (in both x and y) intersections are between lines of adjecent slope
-        for(var i = 1; i<sortedLines.length-1 ; i++){
-          var candidatepoint = intersectLines(sortedLines[0],sortedLines[1])
-
-          if (candidatepoint.x < result.minx ){
-            result.minx=candidatepoint.x
-          } else if (candidatepoint.x > result.maxx){
-            result.maxx = candidatepoint.x
-          }
-
-          if (candidatepoint.y < result.minx ){
-            result.minx=candidatepoint.y
-          } else if (candidatepoint.y > result.maxx){
-            result.maxx = candidatepoint.y
-          }
-
-        }
-
-        //relax bounding box a little (such that no intersections are actually on the boundinBox)
-        result.minx = result.minx - 10;
-        result.maxx = result.maxx + 10;
-        result.miny = result.miny - 10;
-        result.maxy = result.maxy + 10
-        return result;
-        }
-
-      function initialDCELfromBoundingBox(bBox:AlgoBoundingBox):DCEL{
-        var topleft = new Vertex(bBox.minx, bBox.maxy)
-        var topright = new Vertex(bBox.maxx, bBox.maxy)
-        var downleft = new Vertex(bBox.minx, bBox.miny)
-        var downright = new Vertex(bBox.maxx, bBox.miny)
-
-        var vertices = new Array(topleft, topright, downright, downleft)
-
-        var interiorEdges = createClokWiseCycle(vertices)
-        var outerEdges  = createClokWiseCycle(vertices.reverse())
-
-        //now twin them
-        var lastinedge= interiorEdges[interiorEdges.length-1]
-        var lastoutedge = outerEdges[outerEdges.length-1]
-
-        twin(lastinedge, lastoutedge)
-
-        var workingedge = lastinedge.next
-        while (workingedge !== lastinedge){
-          var twintobe = workingedge.prev.twin.prev
-          twin(workingedge, twintobe)
-          workingedge = workingedge.next
-        }
-
-        return new DCEL(vertices,
-          interiorEdges.concat(outerEdges),
-           [lastinedge.incidentFace, lastoutedge.incidentFace])
+    function findBoundingBox(lines: Array<AlgoLine>): AlgoBoundingBox{
+      if (lines.length < 2 ){
+        throw Error("Not enough lines provided")
       }
-      //first find BoundingBox
-      var boundinBox:AlgoBoundingBox = findBoundingBox(lines)
-      console.log ("BoundingBox", boundinBox)
-      var graph:DCEL = initialDCELfromBoundingBox(boundinBox)
-      //incremental construction form slides 8.46 and further
-      //TODO
+      var sortedLines = lines.sort(function(line1:AlgoLine, line2:AlgoLine){return line1.slope- line2.slope})
 
-      return null;
+      var point = intersectLines(sortedLines[0],sortedLines[1]);
+      var result = new AlgoBoundingBox
+      result.minx=point.x;
+      result.maxx=point.x;
+      result.miny=point.y;
+      result.maxy=point.y;
+
+      //Outermost (in both x and y) intersections are between lines of adjecent slope
+      for(var i = 1; i<sortedLines.length-1 ; i++){
+        var candidatepoint = intersectLines(sortedLines[0],sortedLines[1])
+
+        if (candidatepoint.x < result.minx ){
+          result.minx=candidatepoint.x
+        } else if (candidatepoint.x > result.maxx){
+          result.maxx = candidatepoint.x
+        }
+
+        if (candidatepoint.y < result.minx ){
+          result.minx=candidatepoint.y
+        } else if (candidatepoint.y > result.maxx){
+          result.maxx = candidatepoint.y
+        }
+
+      }
+
+      //relax bounding box a little (such that no intersections are actually on the boundinBox)
+      result.minx = result.minx - 10;
+      result.maxx = result.maxx + 10;
+      result.miny = result.miny - 10;
+      result.maxy = result.maxy + 10
+      return result;
+      }
+
+    function initialDCELfromBoundingBox(bBox:AlgoBoundingBox):DCEL{
+      var topleft = new Vertex(bBox.minx, bBox.maxy)
+      var topright = new Vertex(bBox.maxx, bBox.maxy)
+      var downleft = new Vertex(bBox.minx, bBox.miny)
+      var downright = new Vertex(bBox.maxx, bBox.miny)
+
+      var vertices = new Array(topleft, topright, downright, downleft)
+
+      var interiorEdges = createClokWiseCycle(vertices)
+      var outerEdges  = createClokWiseCycle(vertices.reverse())
+
+      //now twin them
+      var lastinedge= interiorEdges[interiorEdges.length-1]
+      var lastoutedge = outerEdges[outerEdges.length-1]
+      twin(lastinedge, lastoutedge)
+
+      var workingedge = lastinedge.next
+      while (workingedge !== lastinedge){
+        var twintobe = workingedge.prev.twin.prev
+        twin(workingedge, twintobe)
+        workingedge = workingedge.next
+      }
+
+      return new DCEL(vertices,
+                      interiorEdges.concat(outerEdges),
+                      [lastinedge.incidentFace, lastoutedge.incidentFace],
+                      lastoutedge.incidentFace)
     }
+
+    function addLineToDCEL(line:AlgoLine, dcel:DCEL):void{
+      //first find intersections on the outer face
+      var startedge = dcel.outerface.outerComponent
+      var intersections:Array<PositionOnEdge> = []
+      var workingedge = startedge
+
+      do{
+        var intersection = intersectEdgeLine(startedge, line)
+        if (intersection !== null){
+          intersections.push(intersection)
+        }
+        workingedge = workingedge.next
+      }while (workingedge !== startedge)
+
+      console.log("intersections with outer boundary (hopfully two)", intersections)
+
+      var leftintersection, rightintersection
+      if (intersections[0].pos.x < intersections[1].pos.x){
+        leftintersection = intersections[0]
+        rightintersection = intersections[1]
+      } else {
+        leftintersection = intersections[1]
+        rightintersection = intersection[0]
+      }
+
+      var workingvertex = insertVertexInEdge(leftintersection.edge, leftintersection.pos)
+      workingedge = leftintersection.edge.twin.next
+
+      while (workingedge.incidentFace !== dcel.outerface){
+        while (intersection === null){
+          intersection = intersectEdgeLine(workingedge, line)
+          workingedge=workingedge.next
+        }
+
+        var newvertex = insertVertexInEdge(intersection.edge, intersection.pos)
+        addEdgeInFace(workingvertex, newvertex, intersection.edge.incidentFace)
+        workingvertex = newvertex
+      }
+    }
+
+
+    //first find BoundingBox
+    var boundinBox:AlgoBoundingBox = findBoundingBox(lines)
+    console.log ("BoundingBox", boundinBox)
+    var graph:DCEL = initialDCELfromBoundingBox(boundinBox)
+    for (var i=0; i <lines.length; i++){
+      addLineToDCEL(lines[i], graph);
+    }
+    //TODO
+
+    return null;
+
+}
 
     function findFeasibleRegion(arrangment: DCEL): Array<Face>{
       //returns the faces in which the dual point may lie to represent a cut
@@ -296,6 +346,44 @@ module TD {
       return result;
     }
 
+    function intersectEdgeLine(edge:Halfedge, line:AlgoLine){
+        //returns intersection point (if any) otherwise returns null
+
+        //create line for edge
+        var edgeline = new AlgoLine()
+        edgeline.slope = (edge.fromvertex.y -edge.tovertex.y)/(edge.fromvertex.x - edge.tovertex.x)
+        edgeline.heightatyaxis = edge.fromvertex.y - edgeline.slope * edge.fromvertex.x
+
+        var intersection:Position = intersectLines(edgeline, line)
+
+        //TODO make more robust (i)
+
+        if (edge.fromvertex.y === edge.tovertex.y){
+          if (inInterval(intersection.x, edge.fromvertex.x, edge.tovertex.x)){
+            return new PositionOnEdge(intersection, edge)
+          }
+        }else{
+          if (inInterval(intersection.y, edge.fromvertex.y, edge.tovertex.y))
+            return new PositionOnEdge(intersection,edge)
+        }
+
+        return null;
+    }
+
+    //Other help functions
+    function inInterval(value:number, bound1:number, bound2: number):boolean{
+      //returns true when value is between bound1 and bound 2
+      var lower = Math.min(bound1, bound2)
+      var upper = Math.max(bound1, bound2)
+
+      if (value<upper || lower<value){
+        return true;
+      } else{
+        return false
+      }
+
+    }
+
     //DCEL help functions
     function createClokWiseCycle(vertices: Array<Vertex>):Array<Halfedge>{
       var i
@@ -327,6 +415,80 @@ module TD {
       return edges
     }
 
+    function insertVertexInEdge(edge:Halfedge, pos:Position):Vertex{
+      //returns the inserted Vertex
+
+      var vertex = new Vertex(pos.x, pos.y)
+      var oldToVertex = edge.tovertex
+      edge.tovertex= vertex
+      edge.twin.fromvertex = vertex
+
+      var newedge = new Halfedge(vertex, oldToVertex)
+      var newtwinedge = new Halfedge(oldToVertex, vertex)
+
+      twin(newedge, newtwinedge)
+
+      //fix pointers in the original cycle
+      chain(newedge, edge.next)
+      chain(edge, newedge)
+
+
+      //fix pointers in the twin cycle
+      chain(edge.twin.prev, newtwinedge)
+      chain(newtwinedge, edge.twin)
+
+      //set faces
+      newedge.incidentFace = newedge.next.incidentFace
+      newtwinedge.incidentFace = newtwinedge.next.incidentFace
+
+      return vertex
+    }
+
+    function addEdgeInFace(vertex1:Vertex, vertex2: Vertex, face:Face):void{
+      var startedge = face.outerComponent
+      var workingedge = startedge
+
+      var to1 =null, from1 = null, to2=null, from2=null
+      do{
+        if (workingedge.tovertex === vertex1){
+          to1 = workingedge
+          from1 = to1.next
+        }
+        if (workingedge.tovertex === vertex2){
+          to2 = workingedge
+          from2 = to2.next
+        }
+        workingedge=workingedge.next
+      }while (workingedge !== startedge)
+
+      if (to1===null || from1 === null || to2===null || from2===null){
+        throw Error("Vertices do appear to not lie on the boundary of the provided face")
+      }
+
+      var newedge = new Halfedge(vertex1, vertex2)
+      chain(to1, newedge)
+      chain(newedge, from2)
+
+      var newtwinedge = new Halfedge(vertex2, vertex1)
+      chain(to2, newtwinedge)
+      chain(newtwinedge, from1)
+
+      twin(newedge, newtwinedge)
+
+      //update face reference (and add face)
+      newedge.incidentFace=face
+      updateIncidentFaceInCycle(newtwinedge, new Face(newtwinedge))
+
+    }
+
+    function updateIncidentFaceInCycle(startedge:Halfedge, face:Face){
+      var workingedge = startedge
+      do{
+        workingedge.incidentFace = face
+        workingedge=workingedge.next
+      } while (workingedge !== startedge)
+    }
+
     function twin(edge1:Halfedge, edge2:Halfedge):void{
       //Twins two edges to each other
       if(!(edge1.twin===undefined && edge2.twin===undefined)){
@@ -338,4 +500,11 @@ module TD {
       edge1.twin=edge2
       edge2.twin=edge1
     }
+
+    function chain(edge1:Halfedge, edge2:Halfedge){
+      //updates next and prev references
+      edge1.next =edge2
+      edge2.prev = edge1
+    }
+
 }
