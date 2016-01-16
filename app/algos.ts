@@ -57,7 +57,7 @@ module TD {
   }
 
   class DCEL{
-    constructor(public vertices:Array<Vertex>, public edges:Array<Halfedge>, public faces:Array<Face>, public outerface:Face){    }
+    constructor(public vertices:Array<Vertex>, public faces:Array<Face>, public outerface:Face){    }
     //Q: Is the overarching structure necesarry?
   }
   //End Clases for DCEL
@@ -247,7 +247,6 @@ module TD {
       }
 
       return new DCEL(vertices,
-                      interiorEdges.concat(outerEdges),
                       [lastinedge.incidentFace, lastoutedge.incidentFace],
                       lastoutedge.incidentFace)
     }
@@ -287,7 +286,8 @@ module TD {
         }
 
         var newvertex = insertVertexInEdge(intersection.edge, intersection.pos)
-        addEdgeInFace(workingvertex, newvertex, intersection.edge.incidentFace)
+        dcel.vertices.push(newvertex)
+        dcel.faces.push(addEdgeInFace(workingvertex, newvertex, intersection.edge.incidentFace))
         workingvertex = newvertex
       }
     }
@@ -300,7 +300,7 @@ module TD {
     for (var i=0; i <lines.length; i++){
       addLineToDCEL(lines[i], graph);
     }
-    //TODO
+    console.log("fianl grap", graph)
 
     return null;
 
@@ -444,7 +444,8 @@ module TD {
       return vertex
     }
 
-    function addEdgeInFace(vertex1:Vertex, vertex2: Vertex, face:Face):void{
+    function addEdgeInFace(vertex1:Vertex, vertex2: Vertex, face:Face):Face{
+      //returns the new face
       var startedge = face.outerComponent
       var workingedge = startedge
 
@@ -476,8 +477,11 @@ module TD {
       twin(newedge, newtwinedge)
 
       //update face reference (and add face)
+      var newface=new Face(newtwinedge)
       newedge.incidentFace=face
-      updateIncidentFaceInCycle(newtwinedge, new Face(newtwinedge))
+      updateIncidentFaceInCycle(newtwinedge, newface)
+
+      return newface
 
     }
 
