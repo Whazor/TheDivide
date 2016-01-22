@@ -58,7 +58,7 @@ module TD {
   }
 
   class DCEL{
-    constructor(public vertices:Array<Vertex>, public edges:Array<Halfedge>, public faces:Array<Face>, public outerface:Face){    }
+    constructor(public vertices:Array<Vertex>, public edges:Array<Halfedge>, public faces:Array<Face>, public outerface:Face, public boundingBox:AlgoBoundingBox){    }
     //Q: Is the overarching structure necesarry?
   }
   //End Clases for DCEL
@@ -250,7 +250,8 @@ module TD {
       return new DCEL(vertices,
                       edges,
                       [interiorEdges[0].incidentFace, outerEdges[0].incidentFace],
-                      outerEdges[0].incidentFace)
+                      outerEdges[0].incidentFace,
+                      bBox)
     }
 
     function addLineToDCEL(line:AlgoLine, dcel:DCEL):void{
@@ -314,8 +315,10 @@ module TD {
   export var graph
 
     function findFeasibleRegion(arrangment: DCEL): Array<Face>{
+
       //returns the faces in which the dual point may lie to represent a cut
       // cutting a given army in two equal parts in the primal plane.
+      var startingedge = arrangment.outerface.outerComponent
 
       //TODO
       throw Error("findFeasibleRegion not yet implemented" )    }
@@ -382,6 +385,7 @@ module TD {
     //Other help functions
     function inInterval(value:number, bound1:number, bound2: number):boolean{
       //returns true when value is between bound1 and bound 2
+      //TODO test for robustness
       var lower = Math.min(bound1, bound2)
       var upper = Math.max(bound1, bound2)
 
