@@ -13,8 +13,12 @@ module TD {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
 
-      var debugctx = (<HTMLCanvasElement>document.getElementById("debug")).getContext("2d");
-      Algo.Draw.setCanvasContext(debugctx)
+      try{
+        var debugctx = (<HTMLCanvasElement>document.getElementById("debug")).getContext("2d");
+        Algo.Draw.setCanvasContext(debugctx)
+      } catch( TypeError){
+        console.info("couldnt init debug context")
+      }
 
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
