@@ -26,10 +26,12 @@ module Algo{
     return edges
   }
 
-  export function insertVertexInEdge(edge:Halfedge, pos:TD.Position, dcel:DCEL):Vertex{
+  export function insertVertexInEdge(intersection:PositionOnEdge, dcel:DCEL):Vertex{
     //returns the inserted Vertex
     //If the requested insertion Position is on a endpoint we insert no vertex
     //and instead return said endpoint
+    var edge = intersection.edge
+    var pos = intersection.pos
 
     if(Algo.samePos(edge.fromvertex, pos)){
       console.error("Requested insertion in Edge on fromvertex", edge, pos)
@@ -38,7 +40,11 @@ module Algo{
 
     if(Algo.samePos(edge.tovertex, pos)){
       console.error("Requested insertion in Edge on tovertex", edge, pos)
-      return edge.tovertex
+      throw "terminate"
+      // return edge.tovertex
+    }
+    if (isNaN(pos.x) || isNaN(pos.y)){
+      throw "Unexpected NaN"
     }
 
 

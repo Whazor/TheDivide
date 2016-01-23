@@ -13,6 +13,9 @@ module TD {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
 
+      var debugctx = (<HTMLCanvasElement>document.getElementById("debug")).getContext("2d");
+      Algo.Draw.setCanvasContext(debugctx)
+
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
 

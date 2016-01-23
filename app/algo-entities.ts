@@ -13,6 +13,7 @@ module Algo{
       super()
       this.x =x
       this.y =y
+      console.log("creating vertex at ",x ,y)
     }
   }
 
@@ -21,6 +22,14 @@ module Algo{
     maxx:number
     miny:number
     maxy:number
+
+    width():number{
+      return this.maxx-this.minx
+    }
+
+    height():number{
+      return this.maxy-this.miny
+    }
   }
 
   export class Halfedge{
@@ -34,6 +43,8 @@ module Algo{
     constructor(fromvertex, tovertex){
       this.fromvertex=fromvertex
       this.tovertex=tovertex
+
+      //console.log("Creating edge from", fromvertex.x, fromvertex.y , "to", tovertex.x ,tovertex.y)
 
       if (this.length() == 0){
         console.error(this.fromvertex.x - this.tovertex.x, this.fromvertex.y - this.tovertex.y )
@@ -63,6 +74,9 @@ module Algo{
     edge:Halfedge
 
     constructor(pos, edge){
+      if (pos === undefined || edge=== undefined){
+        throw "Undefined in constructor of PositionOnEdge"
+      }
       this.pos = pos
       this.edge = edge
     }
