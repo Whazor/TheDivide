@@ -35,76 +35,6 @@
 
     <!-- main -->
     <script src="app/main.js" charset="utf-8"></script>
-
-    <!-- temp css, put in separate file -->
-    <style type="text/css">
-    #logo
-      {
-        position: absolute;
-        top:110px;
-        right:0;
-        bottom:0;
-        left:162.5px;
-      }
-    #mainmenu
-      {
-        position: absolute;
-        top:250px;
-        right:0;
-        bottom:0;
-        left:100px;
-      }
-    .mnubutton
-      {
-        position: absolute;
-        top:0;
-        right:0;
-        bottom:0;
-        left:0;
-
-        width: 375px;
-        height:110px;
-
-        background: url("img/btn-bg-01.png");
-        overflow: hidden;
-        transition: all 0.2s;
-      }
-    #pg
-      {
-      }
-    #pg:hover
-      {
-        background: url("img/btn-bg-pg.png");
-      }
-    #pg:active
-      {
-        background: url("img/btn-bg-pg2.png");
-      }
-    #htp
-      {
-        top: 120px;
-      }
-    #htp:hover
-      {
-        background: url("img/btn-bg-htp.png");
-      }
-    #htp:active
-      {
-        background: url("img/btn-bg-htp2.png");
-      }
-    #hiw
-      {
-        top: 240px;
-      }
-    #hiw:hover
-      {
-        background: url("img/btn-bg-hiw.png");
-      }
-    #hiw:active
-      {
-        background: url("img/btn-bg-hiw2.png");
-      }
-    </style>
   </head>
   <body>
 
@@ -112,7 +42,7 @@
     <div id="loadscreen" style="background-color: white; position:absolute; width: 500px; height: 200px; padding: 250px; border: 1px solid black;">
       Loading:
       <div style="width: 500px; height: 40px; border: 1px solid;">
-        <div id="bar" style="width: 0%; height: 100%; background-color: orange"></div>
+        <div id="bar" style="width: 0%; height: 100%; background-color: blue"></div>
       </div>
     </div>
 
@@ -120,22 +50,11 @@
 
     </canvas>
 
-    <img id="logo" src="img/logo2.png" />
-
-    <div id="mainmenu">
-      <a id="pg" href="game.html" class="mnubutton">
-          <img class="menubtntitle" src="img/pg.png" />
-      </a>
-      <a id="htp" href="#" class="mnubutton">
-          <img class="menubtntitle" src="img/htp.png" />
-      </a>
-      <a id="hiw" href="#" class="mnubutton">
-          <img class="menubtntitle" src="img/hiw.png" />
-      </a>
-    </div>
-
         <div style="display:none">
-          <img id="imgBackground" class="image" src="img/BG_01.svg" />
+          <img id="imgSoldier" class="image" src="img/soldier.svg">
+          <img id="imgArcher" class="image" src="img/archer.svg">
+          <img id="imgMage" class="image" src="img/mage.svg">
+          <img id="imgBackground" class="image" src="img/Background-Scene.svg" />
         </div>
 
   </body>
