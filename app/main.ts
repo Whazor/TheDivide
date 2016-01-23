@@ -16,21 +16,21 @@ module TD {
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
 
-      this.line = TD.randomLineTroughCenter(this.canvas.width, this.canvas.height);
+      this.line = Algo.randomLineTroughCenter(this.canvas.width, this.canvas.height);
 
       var n = 3;
 
-      var possies1 = TD.createArmy(n, this.line);
+      var possies1 = Algo.createArmy(n, this.line);
       for (let i = 0; i < possies1.length; i++) {
           this.things.push(new TD.Soldier(possies1[i]));
       }
 
-      var possies2 = TD.createArmy(n, this.line);
+      var possies2 = Algo.createArmy(n, this.line);
       for (let i = 0; i < possies2.length; i++) {
           this.things.push(new TD.Mage(possies2[i]));
       }
 
-      var possies3 = TD.createArmy(n, this.line);
+      var possies3 = Algo.createArmy(n, this.line);
       for (let i = 0; i < possies3.length; i++) {
           this.things.push(new TD.Archer(possies3[i]));
       }
@@ -112,7 +112,7 @@ module TD {
 
         //find a cut
         console.log("findCut")
-        findCut(this.things);
+        Algo.findCut(this.things);
       }
     }
   }
