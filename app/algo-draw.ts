@@ -1,6 +1,7 @@
 module Algo{
   export module Draw{
-    var size =10000
+    var vsize =20000
+    var hsize = 1000
     var ctx:CanvasRenderingContext2D;//context of the debug context
 
     export function setCanvasContext(contex:CanvasRenderingContext2D){
@@ -13,7 +14,7 @@ module Algo{
 
       // Use the identity matrix while clearing the canvas
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, size,size);
+      ctx.clearRect(0, 0, hsize,vsize);
 
       // Restore the transform
       ctx.restore();
@@ -21,7 +22,7 @@ module Algo{
 
     export function dot( x:number,  y:number){
       ctx.beginPath();
-      ctx.arc(x,y,1,0,2*Math.PI);
+      ctx.arc(x,y,.6,0,2*Math.PI);
       ctx.fill();
     }
 
@@ -35,16 +36,18 @@ module Algo{
     export function drawLine(line:Algo.AlgoLine, color:string){
       ctx.strokeStyle = color
       ctx.beginPath()
-      ctx.moveTo(-size, line.heightatyaxis+ -size*line.slope)
-      ctx.lineTo(size, line.heightatyaxis + size*line.slope)
+      ctx.moveTo(-hsize, line.heightatyaxis+ -hsize*line.slope)
+      ctx.lineTo(hsize, line.heightatyaxis + hsize*line.slope)
       ctx.stroke()
 
     }
 
     export function setViewport(x:number, y:number, width:number, height:number){
-      //assum ctx is 1000*1000 px
-      var scalefactor = Math.min(size/width, size/height)
-      ctx.setTransform(scalefactor,0,0,scalefactor,0,0)
+      var xscalefactor = hsize/width
+      var yscalefactor = vsize/height
+      console.log("xscale", xscalefactor,"yscale" ,yscalefactor)
+      var scale = Math.min(xscalefactor, yscalefactor)
+      ctx.setTransform(scale,0,0,scale,0,0)
       ctx.translate(-x,-y)
 
       dot(x,y)
@@ -60,10 +63,10 @@ module Algo{
 
       ctx.strokeStyle = color;
 
-      ctx.lineWidth= .25
+      ctx.lineWidth= .1
       ctx.strokeRect(bbox.minx, bbox.miny, bbox.maxx-bbox.minx, bbox.maxy - bbox.miny)
 
-      ctx.lineWidth = .5
+      ctx.lineWidth = .2
 
       for(i=0; i<vertices.length; i++){
         dot(vertices[i].x, vertices[i].y)

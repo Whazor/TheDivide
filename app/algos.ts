@@ -21,7 +21,7 @@ module Algo {
     return (point.y<liney); //< instead of > to take care of inverted y-axis
   }
 
-  export function randomPosition(width:number, height:number): TD.Position {
+  function randomPosition(width:number, height:number): TD.Position {
     var pos = new TD.Position();
     pos.x = Math.floor(Math.random() * (width+1));
     pos.y = Math.floor(Math.random() * (height+1));
@@ -55,7 +55,10 @@ module Algo {
     var points_below = [];
 
     while (points_above.length < n/2 || points_below.length < n/2) {
-      var pos = randomPosition(TD.width, TD.height);
+      //prevent soldiers against the borders
+      var pos = randomPosition(TD.width-100, TD.height-100);
+      pos.x += 50
+      pos.y += 50
 
       if (aboveLine(line, pos)) {
         if (points_above.length < n/2) {
@@ -93,9 +96,15 @@ module Algo {
     }
 
     var archerDCEL = makearrangement(dualizePoints(archerarmy));
-    //Debug, only archers
-    var mageDCEL = undefined //makearrangement(dualizePoints(magearmy));
-    var soldierDCEL = undefined //makearrangement(dualizePoints(soldierarmy));
+    var mageDCEL = makearrangement(dualizePoints(magearmy));
+    var soldierDCEL = makearrangement(dualizePoints(soldierarmy));
+
+
+    Algo.Draw.clearCanvas();
+    Algo.Draw.setViewport(-10, -2000, 20, 4000);
+    Algo.Draw.DrawDcel(archerDCEL, "green");
+    Algo.Draw.DrawDcel(mageDCEL, "blue");
+    Algo.Draw.DrawDcel(soldierDCEL, "red");
 
     var dualPos:TD.Position = findPointInRegions(findFeasibleRegion(archerDCEL),
                                               findFeasibleRegion(mageDCEL),
@@ -157,10 +166,10 @@ module Algo {
 
       //relax bounding box a little (such that no intersections are actually on the boundingBox)
 
-      result.minx = result.minx - 100;
-      result.maxx = result.maxx + 100;
-      result.miny = result.miny - 100;
-      result.maxy = result.maxy + 100;
+      result.minx = result.minx - 5;
+      result.maxx = result.maxx + 5;
+      result.miny = result.miny - 5;
+      result.maxy = result.maxy + 5;
       return result;
       }
 
@@ -201,12 +210,13 @@ module Algo {
       var intersections:Array<PositionOnEdge> = []
       var workingedge = startedge
 
-      var inters = []
-      for( var i =0; i<dcel.edges.length ; i++){
-        var dbintersection = intersectEdgeLine(dcel.edges[i], line)
-        inters.push(dbintersection)
-      }
-      console.log("We expect ", inters.length, "intersections", inters)
+//DEBUG tool
+//       var inters = []
+//       for( var i =0; i<dcel.edges.length ; i++){
+//         var dbintersection = intersectEdgeLine(dcel.edges[i], line)
+//         inters.push(dbintersection)
+//       }
+//       console.log("We expect ", inters.length, "intersections", inters)
 
       do{
         var intersection = intersectEdgeLine(workingedge, line)
@@ -240,22 +250,14 @@ module Algo {
         while (intersection === null){
           workingedge=workingedge.next
           intersection = intersectEdgeLine(workingedge, line)
-          console.log("workingedge", dcel.edges.indexOf(workingedge))
         };
 
-        console.log("found intersection", intersection, intersection.pos.x , intersection.pos.y, "edge", dcel.edges.indexOf(intersection.edge))
-        console.log("at working edge", dcel.edges.indexOf(workingedge))
         workingedge = workingedge.twin //move workingedge to right position to contiue search
-        console.log("skipping edge twin edge", dcel.edges.indexOf(workingedge))
 
         //then add more
         intersections.push(intersection)
         faces.push(intersection.edge.incidentFace)
-        console.log("incident face of the working edge",workingedge.incidentFace, workingedge.incidentFace=== dcel.outerface)
       }
-      console.log("Hit the outerface, stopping")
-      console.log("the follwoing are the found vertices", intersections.length, intersections)
-      console.log("adding edges")
 
       if ( intersections.length !== faces.length +1){
         throw "Unexpected number of vertices/faces"
@@ -263,7 +265,6 @@ module Algo {
 
       var vertices = []
       for(var i=0; i<intersections.length; i++){
-        console.log("creating vertex", i)
         vertices.push(Algo.insertVertexInEdge(intersections[i], dcel))
       }
 
@@ -278,7 +279,6 @@ module Algo {
     var boundingBox:AlgoBoundingBox =  findBoundingBox(lines)
     console.log ("BoundingBox", boundingBox)
     var graph = initialDCELfromBoundingBox(boundingBox)
-    console.log("start adding lines", lines)
     for (var i=0; i <lines.length; i++){
       // add line`
       console.log("adding line", i+1)
@@ -286,15 +286,6 @@ module Algo {
 
       //debug stuff
       Algo.checkWellformedDCEL(graph)
-      Algo.Draw.clearCanvas();
-      Algo.Draw.setViewport(boundingBox.minx, boundingBox.miny, boundingBox.width(), boundingBox.height());
-      Algo.Draw.DrawDcel(graph, "black");
-      // Algo.Draw.drawLine(lines[i], "red")
-      // for (var j=0; j <lines.length; j++){
-      //   if (j<i){
-      //     Algo.Draw.drawLine(lines[j], "green")
-      //   }
-      // }
     }
     return graph;
 
@@ -342,7 +333,7 @@ module Algo {
       var dbstartedge = workingedge
       while (! isEdgeLeadingToRightMostVertex(workingedge)){
         workingedge = workingedge.next
-        console.log("edge index", arrangment.edges.indexOf(workingedge), "start", arrangment.edges.indexOf(dbstartedge), workingedge)
+        //console.log("edge index", arrangment.edges.indexOf(workingedge), "start", arrangment.edges.indexOf(dbstartedge), workingedge)
         if (workingedge === dbstartedge){
           throw Error("OMG")
         }

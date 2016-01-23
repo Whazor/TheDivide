@@ -13,7 +13,7 @@ module Algo{
       super()
       this.x =x
       this.y =y
-      console.log("creating vertex at ",x ,y)
+      //console.log("creating vertex at ",x ,y)
     }
   }
 
