@@ -28,10 +28,19 @@ module Algo{
 
   export function insertVertexInEdge(edge:Halfedge, pos:TD.Position, dcel:DCEL):Vertex{
     //returns the inserted Vertex
+    //If the requested insertion Position is on a endpoint we insert no vertex
+    //and instead return said endpoint
 
-    if(Algo.samePos(edge.fromvertex, pos) || Algo.samePos(edge.tovertex, pos)){
-      throw Error("Requested insertion in Edge on endpoint")
+    if(Algo.samePos(edge.fromvertex, pos)){
+      console.error("Requested insertion in Edge on fromvertex", edge, pos)
+      return edge.fromvertex
     }
+
+    if(Algo.samePos(edge.tovertex, pos)){
+      console.error("Requested insertion in Edge on tovertex", edge, pos)
+      return edge.tovertex
+    }
+
 
     var vertex = new Vertex(pos.x, pos.y)
     dcel.vertices.push(vertex)
@@ -81,18 +90,23 @@ module Algo{
     }while (workingedge !== startedge)
 
     if (to1===null || from1 === null || to2===null || from2===null){
-      throw Error("Vertices do appear to not lie on the boundary of the provided face")
+      throw "Vertices do appear to not lie on the boundary of the provided face"
     }
 
-    var newedge = new Halfedge(vertex1, vertex2)
-    dcel.edges.push(newedge)
-    chain(to1, newedge)
-    chain(newedge, from2)
+    try{
+      var newedge = new Halfedge(vertex1, vertex2)
+      dcel.edges.push(newedge)
+      chain(to1, newedge)
+      chain(newedge, from2)
 
-    var newtwinedge = new Halfedge(vertex2, vertex1)
-    dcel.edges.push(newtwinedge)
-    chain(to2, newtwinedge)
-    chain(newtwinedge, from1)
+      var newtwinedge = new Halfedge(vertex2, vertex1)
+      dcel.edges.push(newtwinedge)
+      chain(to2, newtwinedge)
+      chain(newtwinedge, from1)
+    }catch(Error){
+      console.error(vertex1, vertex2, face, dcel)
+      throw "Failure inserting edge"
+    }
 
     twin(newedge, newtwinedge)
 
@@ -137,7 +151,5 @@ module Algo{
     edge1.next =edge2
     edge2.prev = edge1
   }
-
-
 
 }

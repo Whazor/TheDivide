@@ -36,7 +36,8 @@ module Algo{
       this.tovertex=tovertex
 
       if (this.length() == 0){
-        throw Error( "creating edge of length zero")
+        console.error(this.fromvertex.x - this.tovertex.x, this.fromvertex.y - this.tovertex.y )
+        throw Error("creating edge of length zero")
       }
     }
 

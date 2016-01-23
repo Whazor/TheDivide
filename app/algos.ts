@@ -191,6 +191,7 @@ module Algo {
                       bBox)
     }
 
+
     function addLineToDCEL(line:AlgoLine, dcel:DCEL):void{
       //first find intersections on the outer face
       var startedge = dcel.outerface.outerComponent
@@ -224,7 +225,9 @@ module Algo {
         while (intersection === null){
           intersection = intersectEdgeLine(workingedge, line)
           workingedge=workingedge.next
-        }
+        };
+
+        console.log("found intersection", intersection, intersection.pos.x , intersection.pos.y, "edge", dcel.edges.indexOf(intersection.edge))
 
         var newvertex = Algo.insertVertexInEdge(intersection.edge, intersection.pos, dcel)
         Algo.addEdgeInFace(workingvertex, newvertex, intersection.edge.incidentFace, dcel)
