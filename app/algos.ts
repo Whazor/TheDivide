@@ -182,6 +182,7 @@ module TD {
     return result;
   }
 
+
   function makearrangement(lines: Array<AlgoLine>): DCEL{
 
     function findBoundingBox(lines: Array<AlgoLine>): AlgoBoundingBox{
@@ -269,7 +270,7 @@ module TD {
         workingedge = workingedge.next
       }while (workingedge !== startedge)
 
-      console.log("intersections with outer boundary (hopfully two)", intersections)
+      console.info("intersections with outer boundary (hopfully two)", intersections)
 
       var leftintersection, rightintersection
       if (intersections[0].pos.x < intersections[1].pos.x){
@@ -299,12 +300,11 @@ module TD {
     //first find BoundingBox
     var boundingBox:AlgoBoundingBox = findBoundingBox(lines)
     console.log ("BoundingBox", boundingBox)
-    graph = initialDCELfromBoundingBox(boundingBox)
+    var graph = initialDCELfromBoundingBox(boundingBox)
     console.log("start adding lines", lines)
     for (var i=0; i <lines.length; i++){
       checkWellformedDCEL(graph)
       addLineToDCEL(lines[i], graph);
-      console.log("line added")
     }
     checkWellformedDCEL(graph)
 
@@ -312,302 +312,364 @@ module TD {
 
   }
 
-  export var graph
+  function findFeasibleRegion(arrangment: DCEL): Array<Face>{
 
-    function findFeasibleRegion(arrangment: DCEL): Array<Face>{
-
-      //returns the faces in which the dual point may lie to represent a cut
-      // cutting a given army in two equal parts in the primal plane.
-      var startingedge = arrangment.outerface.outerComponent
-
-      //TODO
-      throw Error("findFeasibleRegion not yet implemented" )    }
-
-    function findPointInRegions(region1: Array<Face>, region2: Array<Face>, region3: Array<Face>): Position{
-      //returns a point in all 3 regions, or null when this is impossible
-
-      throw Error("findPointInRegions not yet implemented" )
-      //TODO
+    function isEdgeLeadingToRightMostVertex(edge:Halfedge){
+      console.log(edge.fromvertex.x <= edge.tovertex.x, edge.next.fromvertex.x >= edge.next.tovertex.x)
+      if (edge.fromvertex.x <= edge.tovertex.x && edge.next.fromvertex.x >= edge.next.tovertex.x){
+        console.log("return true")
+        return true
       }
+      console.log("return false")
+      return false
 
-    function dualizePoint(point: Position):Line{
-      var algoLine:AlgoLine = dualizePoints([point])[0];
-      var pos1 = new Position();
-      pos1.x=0
-      pos1.y=algoLine.heightatyaxis;
-
-      var pos2 = new Position();
-      pos2.x = 100;
-      pos2.y = algoLine.heightatyaxis + 100 * algoLine.slope;
-
-      var line:TD.Line = new TD.Line();
-      line.point1 = pos1;
-      line.point2 = pos2;
-      return line;
+    }
+    //returns the faces in which the dual point may lie to represent a cut
+    // cutting a given army in two equal parts in the primal plane.
+    var workingedge = arrangment.outerface.outerComponent
+    var minx = arrangment.boundingBox.minx
+    var leftedges: Array<Halfedge> =[]
+    while (! (workingedge.tovertex.x == minx && workingedge.fromvertex.x != minx)){
+      workingedge = workingedge.next
     }
 
-    //Small Geometric methods
-    function intersectLines(line1: AlgoLine, line2: AlgoLine): Position{
-      var result = new Position();
-      var dy = line1.heightatyaxis - line2.heightatyaxis;
-      var comparitiveslope = line1.slope - line2.slope
-      result.x = -dy/comparitiveslope;
-      result.y = line1.heightatyaxis + result.x *line1.slope;
-      return result;
+
+    workingedge = workingedge.next //workingedge is now the first edge with both from.x and to.x = minx
+                                   // (i.e. leftupper edge)
+
+    while (workingedge.tovertex.x == minx ){
+      leftedges.push(workingedge)
+      workingedge = workingedge.next
     }
 
-    function intersectEdgeLine(edge:Halfedge, line:AlgoLine){
-        //returns intersection point (if any) otherwise returns null
+    if (leftedges.length %2 == 0 ){
+      throw Error("Unexpected even number of leftmost edges "+ leftedges.length)
+    }
+    console.log("All leftedges", leftedges)
 
-        //create line for edge
-        var edgeline = new AlgoLine()
-        edgeline.slope = (edge.fromvertex.y -edge.tovertex.y)/(edge.fromvertex.x - edge.tovertex.x)
-        edgeline.heightatyaxis = edge.fromvertex.y - edgeline.slope * edge.fromvertex.x
 
-        var intersection:Position = intersectLines(edgeline, line)
+    var middleleftedge = leftedges[(leftedges.length -1)/2]
+    var startingFace = middleleftedge.twin.incidentFace
+    var feasibleFaces= [startingFace]
 
-        //TODO make more robust (i)
-
-        var dy = Math.abs(edge.fromvertex.y - edge.tovertex.y )
-        var dx = Math.abs(edge.fromvertex.x - edge.tovertex.x )
-        if (dx>dy) {
-          if (inInterval(intersection.x, edge.fromvertex.x, edge.tovertex.x)){
-            return new PositionOnEdge(intersection, edge)
-          }
-        }else{
-          if (inInterval(intersection.y, edge.fromvertex.y, edge.tovertex.y))
-            return new PositionOnEdge(intersection,edge)
+    //itrate trough the faces until we hit the outer face again
+    workingedge= middleleftedge.twin
+    while(true){
+      var dbstartedge = workingedge
+      while (! isEdgeLeadingToRightMostVertex(workingedge)){
+        workingedge = workingedge.next
+        console.log("edge index", arrangment.edges.indexOf(workingedge), "start", arrangment.edges.indexOf(dbstartedge), workingedge)
+        if (workingedge === dbstartedge){
+          throw Error("OMG")
         }
-
-        return null;
-    }
-
-    //Other help functions
-    function inInterval(value:number, bound1:number, bound2: number):boolean{
-      //returns true when value is between bound1 and bound 2
-      //TODO test for robustness
-      var lower = Math.min(bound1, bound2)
-      var upper = Math.max(bound1, bound2)
-
-      if (value<upper && lower<value){
-        return true;
-      } else{
-        return false
       }
-
-    }
-
-    //DCEL help functions
-    function createClokWiseCycle(vertices: Array<Vertex>):Array<Halfedge>{
-      var i
-      //returns all Halfedges in the cycle, the newly created interior face is then easaliy found
-      //all properties are set except for
-      var edges:Array<Halfedge>=[]
-
-      for(i = 0; i < vertices.length-1; i++){
-        edges.push(new Halfedge(vertices[i], vertices[i+1]))
-      }
-      edges.push(new Halfedge(vertices[vertices.length-1], vertices[0]))
-
-      var face = new Face(edges[0])
-
-      //set aditional properties
-
-      for(i=0; i < edges.length -1; i++){
-        chain(edges[i], edges[i+1])
-        edges[i].incidentFace =face
-      }
-      chain(edges[edges.length-1], edges[0])
-      edges[edges.length-1].incidentFace = face
-
-
-      return edges
-    }
-
-    function insertVertexInEdge(edge:Halfedge, pos:Position, dcel:DCEL):Vertex{
-      //returns the inserted Vertex
-
-      var vertex = new Vertex(pos.x, pos.y)
-      dcel.vertices.push(vertex)
-      var oldToVertex = edge.tovertex
-      edge.tovertex= vertex
-      edge.twin.fromvertex = vertex
-
-      var newedge = new Halfedge(vertex, oldToVertex)
-      var newtwinedge = new Halfedge(oldToVertex, vertex)
-      dcel.edges.push(newedge)
-      dcel.edges.push(newtwinedge)
-
-      twin(newedge, newtwinedge)
-
-      //fix pointers in the original cycle
-      chain(newedge, edge.next)
-      chain(edge, newedge)
-
-
-      //fix pointers in the twin cycle
-      chain(edge.twin.prev, newtwinedge)
-      chain(newtwinedge, edge.twin)
-
-      //set faces
-      newedge.incidentFace = newedge.next.incidentFace
-      newtwinedge.incidentFace = newtwinedge.next.incidentFace
-
-      return vertex
-    }
-
-    function addEdgeInFace(vertex1:Vertex, vertex2: Vertex, face:Face, dcel:DCEL):Face{
-      //returns the new face
-      var startedge = face.outerComponent
-      var workingedge = startedge
-
-      var to1 =null, from1 = null, to2=null, from2=null
-      do{
-        if (workingedge.tovertex === vertex1){
-          to1 = workingedge
-          from1 = to1.next
+      workingedge = workingedge.twin.prev.twin  // Goes from  *\/ to \/*
+      if(workingedge.incidentFace === arrangment.outerface){
+        break;
+      }else{
+        console.log(arrangment.faces.indexOf(workingedge.incidentFace))
+        feasibleFaces.push(workingedge.incidentFace)
+        if (feasibleFaces.length >100){
+          throw Error("Unexpected large amount of feasible faces")
         }
-        if (workingedge.tovertex === vertex2){
-          to2 = workingedge
-          from2 = to2.next
+      }
+    }
+    console.log("feasibleFaces", feasibleFaces)
+
+
+
+    //TODO
+    throw Error("findFeasibleRegion not yet implemented" )    }
+
+  function findPointInRegions(region1: Array<Face>, region2: Array<Face>, region3: Array<Face>): Position{
+    //returns a point in all 3 regions, or null when this is impossible
+
+    throw Error("findPointInRegions not yet implemented" )
+    //TODO
+    }
+
+  function dualizePoint(point: Position):Line{
+    var algoLine:AlgoLine = dualizePoints([point])[0];
+    var pos1 = new Position();
+    pos1.x=0
+    pos1.y=algoLine.heightatyaxis;
+
+    var pos2 = new Position();
+    pos2.x = 100;
+    pos2.y = algoLine.heightatyaxis + 100 * algoLine.slope;
+
+    var line:TD.Line = new TD.Line();
+    line.point1 = pos1;
+    line.point2 = pos2;
+    return line;
+  }
+
+  //Small Geometric methods
+  function intersectLines(line1: AlgoLine, line2: AlgoLine): Position{
+    var result = new Position();
+    var dy = line1.heightatyaxis - line2.heightatyaxis;
+    var comparitiveslope = line1.slope - line2.slope
+    result.x = -dy/comparitiveslope;
+    result.y = line1.heightatyaxis + result.x *line1.slope;
+    return result;
+  }
+
+  function intersectEdgeLine(edge:Halfedge, line:AlgoLine){
+      //returns intersection point (if any) otherwise returns null
+
+      //create line for edge
+      var edgeline = new AlgoLine()
+      edgeline.slope = (edge.fromvertex.y -edge.tovertex.y)/(edge.fromvertex.x - edge.tovertex.x)
+      edgeline.heightatyaxis = edge.fromvertex.y - edgeline.slope * edge.fromvertex.x
+
+      var intersection:Position = intersectLines(edgeline, line)
+
+      //TODO make more robust (i)
+
+      var dy = Math.abs(edge.fromvertex.y - edge.tovertex.y )
+      var dx = Math.abs(edge.fromvertex.x - edge.tovertex.x )
+      if (dx>dy) {
+        if (inInterval(intersection.x, edge.fromvertex.x, edge.tovertex.x)){
+          return new PositionOnEdge(intersection, edge)
         }
-        workingedge=workingedge.next
-      }while (workingedge !== startedge)
-
-      if (to1===null || from1 === null || to2===null || from2===null){
-        throw Error("Vertices do appear to not lie on the boundary of the provided face")
+      }else{
+        if (inInterval(intersection.y, edge.fromvertex.y, edge.tovertex.y))
+          return new PositionOnEdge(intersection,edge)
       }
 
-      var newedge = new Halfedge(vertex1, vertex2)
-      dcel.edges.push(newedge)
-      chain(to1, newedge)
-      chain(newedge, from2)
+      return null;
+  }
 
-      var newtwinedge = new Halfedge(vertex2, vertex1)
-      dcel.edges.push(newtwinedge)
-      chain(to2, newtwinedge)
-      chain(newtwinedge, from1)
+  //Other help functions
+  function inInterval(value:number, bound1:number, bound2: number):boolean{
+    //returns true when value is between bound1 and bound 2
+    //TODO test for robustness
+    var lower = Math.min(bound1, bound2)
+    var upper = Math.max(bound1, bound2)
 
-      twin(newedge, newtwinedge)
-
-      //update face reference (and add face)
-      var newface=new Face(newtwinedge)
-      dcel.faces.push(newface)
-      newedge.incidentFace=face
-      face.outerComponent=newedge
-      updateInicidentFaceInCycle(newtwinedge, newface)
-
-
-
-      return newface
-
+    if (value<upper && lower<value){
+      return true;
+    } else{
+      return false
     }
 
-    function updateInicidentFaceInCycle(startedge:Halfedge, face:Face):void{
-      var workingedge = startedge
-      do{
-        workingedge.incidentFace = face
-        workingedge=workingedge.next
-      } while (workingedge !== startedge)
-    }
+  }
 
-    function twin(edge1:Halfedge, edge2:Halfedge):void{
-      //Twins two edges to each other
-      if(!(edge1.twin===undefined && edge2.twin===undefined)){
-        throw Error("One or more twins already defined")
+  //DCEL help functions
+  function createClokWiseCycle(vertices: Array<Vertex>):Array<Halfedge>{
+    var i
+    //returns all Halfedges in the cycle, the newly created interior face is then easaliy found
+    //all properties are set except for
+    var edges:Array<Halfedge>=[]
+
+    for(i = 0; i < vertices.length-1; i++){
+      edges.push(new Halfedge(vertices[i], vertices[i+1]))
+    }
+    edges.push(new Halfedge(vertices[vertices.length-1], vertices[0]))
+
+    var face = new Face(edges[0])
+
+    //set aditional properties
+
+    for(i=0; i < edges.length -1; i++){
+      chain(edges[i], edges[i+1])
+      edges[i].incidentFace =face
+    }
+    chain(edges[edges.length-1], edges[0])
+    edges[edges.length-1].incidentFace = face
+
+
+    return edges
+  }
+
+  function insertVertexInEdge(edge:Halfedge, pos:Position, dcel:DCEL):Vertex{
+    //returns the inserted Vertex
+
+    var vertex = new Vertex(pos.x, pos.y)
+    dcel.vertices.push(vertex)
+    var oldToVertex = edge.tovertex
+    edge.tovertex= vertex
+    edge.twin.fromvertex = vertex
+
+    var newedge = new Halfedge(vertex, oldToVertex)
+    var newtwinedge = new Halfedge(oldToVertex, vertex)
+    dcel.edges.push(newedge)
+    dcel.edges.push(newtwinedge)
+
+    twin(newedge, newtwinedge)
+
+    //fix pointers in the original cycle
+    chain(newedge, edge.next)
+    chain(edge, newedge)
+
+
+    //fix pointers in the twin cycle
+    chain(edge.twin.prev, newtwinedge)
+    chain(newtwinedge, edge.twin)
+
+    //set faces
+    newedge.incidentFace = newedge.next.incidentFace
+    newtwinedge.incidentFace = newtwinedge.next.incidentFace
+
+    return vertex
+  }
+
+  function addEdgeInFace(vertex1:Vertex, vertex2: Vertex, face:Face, dcel:DCEL):Face{
+    //returns the new face
+    var startedge = face.outerComponent
+    var workingedge = startedge
+
+    var to1 =null, from1 = null, to2=null, from2=null
+    do{
+      if (workingedge.tovertex === vertex1){
+        to1 = workingedge
+        from1 = to1.next
       }
-      if(!(edge1.fromvertex === edge2.tovertex && edge1.tovertex === edge2.fromvertex)){
-        throw Error("These edges can't be twins")
+      if (workingedge.tovertex === vertex2){
+        to2 = workingedge
+        from2 = to2.next
       }
-      edge1.twin=edge2
-      edge2.twin=edge1
+      workingedge=workingedge.next
+    }while (workingedge !== startedge)
+
+    if (to1===null || from1 === null || to2===null || from2===null){
+      throw Error("Vertices do appear to not lie on the boundary of the provided face")
     }
 
-    function chain(edge1:Halfedge, edge2:Halfedge){
-      //updates next and prev references
-      edge1.next =edge2
-      edge2.prev = edge1
+    var newedge = new Halfedge(vertex1, vertex2)
+    dcel.edges.push(newedge)
+    chain(to1, newedge)
+    chain(newedge, from2)
+
+    var newtwinedge = new Halfedge(vertex2, vertex1)
+    dcel.edges.push(newtwinedge)
+    chain(to2, newtwinedge)
+    chain(newtwinedge, from1)
+
+    twin(newedge, newtwinedge)
+
+    //update face reference (and add face)
+    var newface=new Face(newtwinedge)
+    dcel.faces.push(newface)
+    newedge.incidentFace=face
+    face.outerComponent=newedge
+    updateInicidentFaceInCycle(newtwinedge, newface)
+
+    if(dcel.faces.length >100){
+      throw Error("More faces then expeted")
     }
 
-    function checkWellformedDCEL(dcel:DCEL):boolean{
-      var correct = true;
-      var i;
-      var edges = dcel.edges
-      var faces = dcel.faces
 
+    return newface
 
+  }
 
-      console.info("Cheking DCEL .." ,dcel)
-      //euler formula check
-      console.info("Faces ", dcel.faces.length, "HalfEdges", dcel.edges.length, "vertices", dcel.vertices.length)
-      if (dcel.vertices.length - ( dcel.edges.length /2 )+ dcel.faces.length!=2){ // divide by two for halfedges
-        console.error("Does not satisfy Euler charachteristic")
+  function updateInicidentFaceInCycle(startedge:Halfedge, face:Face):void{
+    var workingedge = startedge
+    do{
+      workingedge.incidentFace = face
+      workingedge=workingedge.next
+    } while (workingedge !== startedge)
+  }
+
+  function twin(edge1:Halfedge, edge2:Halfedge):void{
+    //Twins two edges to each other
+    if(!(edge1.twin===undefined && edge2.twin===undefined)){
+      throw Error("One or more twins already defined")
+    }
+    if(!(edge1.fromvertex === edge2.tovertex && edge1.tovertex === edge2.fromvertex)){
+      throw Error("These edges can't be twins")
+    }
+    edge1.twin=edge2
+    edge2.twin=edge1
+  }
+
+  function chain(edge1:Halfedge, edge2:Halfedge){
+    //updates next and prev references
+    edge1.next =edge2
+    edge2.prev = edge1
+  }
+
+  function checkWellformedDCEL(dcel:DCEL):boolean{
+    var correct = true;
+    var i;
+    var edges = dcel.edges
+    var faces = dcel.faces
+
+    //TODO edges of length zero
+    //TODO vertices to close
+
+    console.info("Cheking DCEL .." ,dcel)
+    //euler formula check
+    console.info("Faces ", dcel.faces.length, "HalfEdges", dcel.edges.length, "vertices", dcel.vertices.length)
+    if (dcel.vertices.length - ( dcel.edges.length /2 )+ dcel.faces.length!=2){ // divide by two for halfedges
+      console.error("Does not satisfy Euler charachteristic")
+      correct = false
+    }
+
+    //prev-next check
+    for(i=0; i<edges.length; i++){
+      if(edges[i].prev.next !== edges[i]){
+        console.error("Prev/next error in", i)
         correct = false
       }
-
-      //prev-next check
-      for(i=0; i<edges.length; i++){
-        if(edges[i].prev.next !== edges[i]){
-          console.error("Prev/next error in", i)
-          correct = false
-        }
-        if(edges[i].next.prev !== edges[i]){
-          console.error("nect/prev error in", i)
-          correct = false
-        }
+      if(edges[i].next.prev !== edges[i]){
+        console.error("nect/prev error in", i)
+        correct = false
       }
-
-      //twin defined check
-      for(i=0; i<edges.length; i++){
-        if(edges[i].twin.twin !== edges[i]){
-          console.error("no or invalid twin in edge", i)
-          correct = false
-        }
-        if(edges[i].twin.fromvertex !== edges[i].tovertex){
-          console.error("invalid twin vertex", i)
-          correct = false
-        }
-        if(edges[i].fromvertex !== edges[i].twin.tovertex){
-          console.error("invalid twin vertex", i)
-          correct = false
-        }
-      }
-
-      //cycle around a single face check
-      for(i=0; i<faces.length; i++){
-        var startedge=faces[i].outerComponent
-        var workingedge=startedge
-        var edgelist= [edges.indexOf(workingedge)]
-        do{
-          workingedge= workingedge.next
-          if (workingedge.incidentFace !== faces[i]){
-            console.error("Unexpacted face incident to edge", edges.indexOf(workingedge) )
-            correct = false
-          } else{
-            edgelist.push(edges.indexOf(workingedge))
-          }
-        }while(workingedge !== startedge)
-        console.info("Edges of face", i, ":" , edgelist)
-      }
-
-      //control from from/to vertices of next edges
-      for(i=0; i<edges.length; i++){
-        if(edges[i].prev.tovertex !== edges[i].fromvertex){
-          console.error("Prev.to/from error in", i)
-          correct = false
-        }
-        if(edges[i].next.fromvertex !== edges[i].tovertex){
-          console.error("next.from/to error in", i)
-          correct = false
-        }
-      }
-
-      if (! correct){
-        throw Error("Malformed graph")
-      }
-
-      console.info("Wellformed graph")
-      return correct
     }
+
+    //twin defined check
+    for(i=0; i<edges.length; i++){
+      if(edges[i].twin.twin !== edges[i]){
+        console.error("no or invalid twin in edge", i)
+        correct = false
+      }
+      if(edges[i].twin.fromvertex !== edges[i].tovertex){
+        console.error("invalid twin vertex", i)
+        correct = false
+      }
+      if(edges[i].fromvertex !== edges[i].twin.tovertex){
+        console.error("invalid twin vertex", i)
+        correct = false
+      }
+    }
+
+    //cycle around a single face check
+    for(i=0; i<faces.length; i++){
+      var startedge=faces[i].outerComponent
+      var workingedge=startedge
+      var edgelist= [edges.indexOf(workingedge)]
+      do{
+        workingedge= workingedge.next
+        if (workingedge.incidentFace !== faces[i]){
+          console.error("Unexpacted face incident to edge", edges.indexOf(workingedge) )
+          correct = false
+        } else{
+          edgelist.push(edges.indexOf(workingedge))
+        }
+      }while(workingedge !== startedge)
+      console.info("Edges of face", i, ":" , edgelist)
+    }
+
+    //control from from/to vertices of next edges
+    for(i=0; i<edges.length; i++){
+      if(edges[i].prev.tovertex !== edges[i].fromvertex){
+        console.error("Prev.to/from error in", i)
+        correct = false
+      }
+      if(edges[i].next.fromvertex !== edges[i].tovertex){
+        console.error("next.from/to error in", i)
+        correct = false
+      }
+    }
+
+    if (! correct){
+      throw Error("Malformed graph")
+    }
+
+    console.info("Wellformed graph")
+    return correct
+  }
 
 }
