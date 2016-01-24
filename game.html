@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>The Divide</title>
 
+    <link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
     <script src="bower_components/jquery/dist/jquery.min.js" charset="utf-8"></script>
 
     <script src="libs/typescript-collections/collections.js" charset="utf-8"></script>
@@ -36,6 +37,90 @@
 
     <!-- main -->
     <script src="app/main.js" charset="utf-8"></script>
+    <style type="text/css">
+        .homebtn
+          {
+            opacity:0.3;
+          }
+        #backbtn
+          {
+            position: absolute;
+            top:30px;
+            right:0;
+            bottom:0;
+            left:890px;
+          }
+        .homebtn
+          {
+            position: absolute;
+            top:0;
+            right:0;
+            bottom:0;
+            left:0;
+
+            z-index:1;
+
+            width: 93px;
+            height:86px;
+
+            background: url("img/btn-home-01.png");
+            overflow: hidden;
+            transition: all 0.2s;
+          }
+        .homebtn:hover, .homebtn:active
+          {
+            opacity: 1.0;
+            background: url("img/btn-home-02.png");
+          }
+        #tempGUI
+          {
+            position: absolute;
+            top:0;
+            left:40px;
+            bottom:0;
+            right:0;
+
+            font-family: 'VT323', arial;
+            font-size: 24pt;
+            color: white;
+          }
+        #tempGUI p
+          {
+            opacity:0.3;
+            transition: all 0.2s;
+          }
+        #tempGUI p:hover
+          {
+              opacity:1.0;
+          }
+        #timer
+          {
+            position: absolute;
+            top:3px;
+          }
+        #timer img
+          {
+            position: absolute;
+            top:-3px;
+            left:170px;
+
+            width: 40px;
+            height: auto;
+          }
+        #timer span, #swaps span
+          {
+            font-weight:bold;
+          }
+        #timer span
+          {
+            margin-right:20px;
+          }
+        #swaps
+          {
+            position: absolute;
+            top:48px;
+          }
+    </style>
   </head>
   <body>
 
@@ -52,12 +137,23 @@
 
     </canvas>
 
+<<<<<<< .merge_file_a09484
+      <a class="homebtn ingameGUI" id="backbtn" href="index.html" title="Back to Main Menu"></a>
+
+      <!-- This GUI should be generated in the canvas as well! This is a temporary solution... -->
+      <div id="tempGUI">
+        <p id="timer"><img src="img/clock-icon-gold.svg"><span>Time:</span>00:00 &nbsp;&nbsp;&nbsp; +100 bonus points</p>
+        <p id="swaps">Only <span>1</span> swap(s) left!</p>
+
+      </div>
+=======
     <br>
 
     <input id="archercutlines" type='checkbox'> Archers </inpt>
     <input id="creationline" type='checkbox'> Creation line </inpt>
 
     <br>
+>>>>>>> .merge_file_a11140
 
     <canvas id="debug" width="1000" height="20000" style="border:1px solid #000000;">
 
