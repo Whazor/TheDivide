@@ -44,25 +44,15 @@
       var captions=new Array();
       var i=0, t, f=false;
 
-      slides[0] ="Each level contains a field is filled with characters from different classes. Divide each class into groups of the same size by making a single cut. <br/> <span class='slider-img' id='slide1'><img id='cl1' src='img/class-01.png'/><img id='cl2' src='img/class-02.png'/><img id='cl3' src='img/class-03.png'/></span>";
-      slides[1] ="Press and hold the left mouse-button. Then drag the mouse pointer and release the left mouse-button to make the cut! <span class='slider-img' id='slide2'><img id='ex1' src='img/example-01.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex2' src='img/example-02.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex3' src='img/example-03.jpg'/></span>";
-      slides[2] ="In advanced levels, the classes have been shuffled to make things a little harder for you. In these levels, you might not be able to divide each class equally with a single cut from the start. <br/>So to make things fair, you receive the ability to make members <br/>from different classes trade places! <br/> Swap characters before making the cut, but choose carefully! <br/>You may only perform a swap action for a limited amount of times.<br/><span class='slider-img' id='slide3'><img id='ex4' src='img/example-04.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex5' src='img/example-05.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex6' src='img/example-06.jpg'/></span>";
-      slides[3] ="For each class that you successfully divide in half with a cut,<br/> you earn a star. The more class groups you simultaneously divide in half, the more stars you'll earn! Try dividing all three classes in half with a single cut to earn the maximum amount of stars!<br/><span class='slider-img' id='slide4'><img id='str1' src='img/stars-04.png'/><img id='str2' src='img/stars-03.png'/><img id='str3' src='img/stars-02.png'/><img id='str4' src='img/stars-01.png'/></span>";
-      slides[4] ="Quickly complete levels to earn bonus points. The faster it’s done, the more points you’ll earn! <br/><br/> You may complete every level at your own pace, but being the fastest shows your friends who's boss! There can only be one<br/> Ham-Sandwich cut champ!<br/><span class='slider-img' id='slide5'><img id='time1' src='img/time-04.png'/><img id='time2' src='img/time-03.png'/><img id='time3' src='img/time-02.png'/><img id='time4' src='img/time-01.png'/></span>";
-      slides[5] ="F.A.Q. 1/4 <br/><br/> Q: If I don’t divide all classes correctly, will I still get some credit? <br/><br/> A: Yes! For each class you divide properly you will earn one star, so dividing up to three classes properly can earn you up to three stars! If you don’t manage to divide all classes properly the game will show you where you could’ve made cuts in order to earn more stars!";
-      slides[6] ="F.A.Q. 2/4 <br/><br/> Q: How do I divide a class in half that has an uneven number of members? <br/><br/> A: There is an exceptional Ham-Sandwich theorem case when points lie on the line. In this situation, we count each of these points as either being on one side, on the other, or on neither side of the cut, so drawing the line through the class member at the center of its class distribution would divide the class into two equally-sized groups!";
-      slides[7] ="F.A.Q. 3/4 <br/><br/> Q: So what is this game even about? <br/><br/> A: Glad you asked! The goal of this game is to visualize examples for the Ham Sandwich Theorem. No, that’s not about getting the optimal ham-to-mayonnaise ratio on your sandwich. It’s actually a geometric algorithm. Click here: <a id='boldslide' href='algorithm.html'>How It Works</a>, or access this page from the main menu for a short and general description of this theorem, as well as a detailed description of the algorithms that this game is built upon.";
-      slides[8] ="F.A.Q. 4/4 <br/><br/> Q: Where can I learn more about geometric algorithms? <br/><br/> A: Well, the internet is always a good start for stuff like this, but the explanations presented there might not always be clear and easy to follow. We recommend dropping by <a id='boldslide' href='http://www.win.tue.nl/~kbuchin/' target='blank'>Kevin Buchin’s office at the TU/e</a> to ask him about ham sandwiches! Of course, aside from that, you could also just ask him about his exciting master course called Geometric Algorithms (2IMA15).";
+      slides[0] ="This theorem states that if there are n measureable objects in an n dimensional space, then there is one (n-1)-dimensional slice that cuts them all in half.<br/><br/>For example, suppose you and a friend want to equally share a cake together. With a regular cake like this it looks easy, but what if someone cut out a piece from the center of the cake leaving a gaping hole. How can you divide this cake with just one cut?";
+      slides[1] ="content 2";
+      slides[2] ="content 3";
+      slides[3] ="content 4";
 
-      captions[0]="img/caption-01.png";
-      captions[1]="img/caption-02.png";
-      captions[2]="img/caption-03.png";
-      captions[3]="img/caption-04.png";
-      captions[4]="img/caption-05.png";
-      captions[5]="img/caption-06.png";
-      captions[6]="img/caption-06.png";
-      captions[7]="img/caption-06.png";
-      captions[8]="img/caption-06.png";
+      captions[0]="img/caption-07.png";
+      captions[1]="img/caption-07.png";
+      captions[2]="img/caption-08.png";
+      captions[3]="img/caption-08.png";
 
       function start(){
           //hide table of contents when navigation action starts
@@ -413,8 +403,7 @@
 
 
 
-    <img id="title2" src="img/htp2.png" />
-    <!-- <img id="title3" src="img/hiw2.png" /> -->
+    <img id="title3" src="img/hiw2.png" />
     <a class="homebtn" id="backbtn" href="index.html"></a>
 
     <div id="content">
@@ -427,12 +416,8 @@
                   navigate through the contents of this section.<br/><br/>
                   <span style="font-weight:bold;">- Table of contents -</span><br/>
                     <ul id="toc">
-                      <li>Divide in half!</li>
-                      <li>How to cut</li>
-                      <li>&quot;Swap-n-cut&quot;</li>
-                      <li>Ear stars!</li>
-                      <li>Be fast and earn bonus points!</li>
-                      <li>F.A.Q.</li>
+                      <li>The Ham-Sandwich Theorem</li>
+                      <li>Applied Geometric Algorithms...</li>
                   </ul>
                 </p>
                 <img id="caption" src="img/caption-00.png" />
