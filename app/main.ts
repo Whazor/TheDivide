@@ -9,7 +9,7 @@ module TD {
     things: Array<Entity> = [];
     line: Line;
 
-    archerlines: Array<Algo.AlgoLine>
+    archerlines
 
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
@@ -70,7 +70,7 @@ module TD {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       var image = <HTMLImageElement>document.getElementById("imgBackground");
-      this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+      //DEBUG this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
       if((<HTMLInputElement>document.getElementById("creationline")).checked === true){
         this.ctx.beginPath();
@@ -79,16 +79,21 @@ module TD {
         this.ctx.stroke();
       }
 
-      if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
-        for (var i = 0; i < this.archerlines.length; i++){
-          var line = this.archerlines[i]
-          this.ctx.beginPath();
-          this.ctx.moveTo(0, line.heightatyaxis);
-          this.ctx.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
-          this.ctx.stroke();
-        }
 
-        console.log("ARCHERS!")
+      if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
+        console.log("ARCHERS!", this.archerlines)
+        var colors = ["red", "green", "blue", "black", "pink"]
+        for (var i = 0; i < this.archerlines.length; i++){
+          this.ctx.strokeStyle =  colors[i]
+          var lines = this.archerlines[i]
+          for (var j = 0; j < lines.length; j++){
+            var line = lines[j]
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, line.heightatyaxis);
+            this.ctx.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
+            this.ctx.stroke();
+          }
+        }
       }
 
 

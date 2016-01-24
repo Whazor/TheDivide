@@ -29,4 +29,86 @@ module Algo{
     result.y = line1.heightatyaxis + result.x *line1.slope;
     return result;
   }
+
+ export function rightOfEdge(edge: Algo.Halfedge, pos:TD.Position){
+   //consider orientation
+   var edgeline = new TD.Line()
+   edgeline.point1 = edge.fromvertex
+   edgeline.point2 = edge.tovertex
+   if (edge.fromvertex.x < edge.tovertex.x){
+     //console.log("edge to the left")
+     return Algo.aboveLine(edgeline, pos)
+   } else if (edge.fromvertex.x > edge.tovertex.x){
+     //console.log("edge to the right")
+     return ! Algo.aboveLine(edgeline, pos)
+   } else{
+     //vertical edge
+     if(edge.tovertex.y < edge.fromvertex.y){
+       return pos.x < edge.fromvertex.x
+     } else {
+       return pos.x > edge.fromvertex.x
+     }
+   }
+ }
+
+ export function isInFace(pos: TD.Position, face:Algo.Face){
+   var startedge = face.outerComponent
+   var workingedge = startedge
+   do {
+     if(! rightOfEdge(workingedge, pos)){
+       return false
+     }
+     workingedge = workingedge.next
+   } while (workingedge !== startedge)
+   console.log("This point is in the face")
+   return true
+ }
+
+ export function gridPointsInFace(xspacing:number, yspacing:number, face:Algo.Face){
+   //first compute a boundingBox
+   var bBox = new Algo.AlgoBoundingBox()
+
+   var startedge = face.outerComponent
+   bBox.minx = startedge.fromvertex.x
+   bBox.maxx = startedge.fromvertex.x
+   bBox.miny = startedge.fromvertex.y
+   bBox.maxy = startedge.fromvertex.y
+
+   var workingedge = startedge.next
+
+   while (workingedge !== startedge) {
+     if (workingedge.fromvertex.x < bBox.minx ){
+       bBox.minx=workingedge.fromvertex.x
+     } else if (workingedge.fromvertex.x > bBox.maxx){
+       bBox.maxx = workingedge.fromvertex.x
+     }
+
+     if (workingedge.fromvertex.y < bBox.miny ){
+       bBox.miny =workingedge.fromvertex.y
+     } else if (workingedge.fromvertex.y > bBox.maxy){
+       bBox.maxy = workingedge.fromvertex.y
+     }
+
+     workingedge = workingedge.next
+   }
+
+   console.log("boundingBox of the face", bBox)
+
+   //Then create gridPointsInFace
+   var gridpoints:Array<TD.Position> = []
+   for(var xit=0; xit<bBox.width(); xit+=xspacing){
+     for(var yit=0; yit<bBox.height(); yit+=yspacing){
+       var pos = new TD.Position()
+       pos.x = bBox.minx + xit
+       pos.y = bBox.miny + yit
+       if( isInFace(pos, face)){
+         gridpoints.push(pos)
+       }
+     }
+   }
+
+   return gridpoints
+
+ }
+
 }

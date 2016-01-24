@@ -74,7 +74,10 @@ module Algo {
     return points_above.concat(points_below);
   }
 
-  export function findCut(army: Array<TD.Entity>): AlgoLine[] {
+  export var archerDCEL:DCEL
+  export var archerFeas
+
+  export function findCut(army: Array<TD.Entity>): Array<Array<AlgoLine>> {
     var archerarmy: Array<TD.Archer> = [];
     var soldierarmy: Array<TD.Soldier> = [];
     var magearmy: Array<TD.Mage> = [];
@@ -101,7 +104,7 @@ module Algo {
     var bbox = uniteBoundingBoxes(archerbbox, magebbox, soldierbbox)
 
     console.log("bounding box",bbox)
-    var archerDCEL = makearrangement(dualizePoints(archerarmy), bbox);
+    archerDCEL = makearrangement(dualizePoints(archerarmy), bbox);
     var mageDCEL = makearrangement(dualizePoints(magearmy), bbox);
     var soldierDCEL = makearrangement(dualizePoints(soldierarmy), bbox);
 
@@ -115,24 +118,15 @@ module Algo {
 
 
     var region = findFeasibleRegion(archerDCEL)
-    var boundarypoints = []
-    //for(var i =0 ; i<region.length; i++){
-      var face = region[0]
-      var startedge = face.outerComponent
-      boundarypoints.push(startedge.fromvertex)
-      var workingedge =startedge.next
-      do{
-        boundarypoints.push(workingedge.fromvertex)
-        workingedge = workingedge.next
-      }while (workingedge!==startedge)
-    //}
+    archerFeas = region
+    var lines = []
+    for(var i =0 ; i<region.length; i++){
+      var face = region[i]
+      var grid = Algo.gridPointsInFace(.1, 20, face)
+      lines.push(dualizePoints(grid))
+    }
 
-    return dualizePoints(boundarypoints)
-    // var dualPos:TD.Position = findPointInRegions(findFeasibleRegion(archerDCEL),
-    //                                           findFeasibleRegion(mageDCEL),
-    //                                           findFeasibleRegion(soldierDCEL));
-    //
-    // return dualizePoint(dualPos);
+    return lines
   }
 
   function uniteBoundingBoxes(bbox1, bbox2, bbox3){
@@ -146,7 +140,7 @@ module Algo {
 
   function dualizePoints(points: Array<TD.Position>): Array<AlgoLine>{
     if (points.length===0){
-      throw Error("Request to dualize 0 points")
+      console.error("Request to dualize 0 points")
     }
     var result: Array<AlgoLine> =[];
     for(var i = 0; i<points.length; i++){
@@ -200,8 +194,6 @@ module Algo {
     result.maxy = result.maxy + 5;
     return result;
     }
-
-
 
   function makearrangement(lines: Array<AlgoLine>, boundingBox: AlgoBoundingBox): DCEL{
 
@@ -351,7 +343,7 @@ module Algo {
     //TODO Assumption, feasibleFaces are arenged in a vertical manner!
     //TODO check whether final top edges is at top (i.e we never went left)
 
-    var middleedge = leftandbottomedges[(leftandbottomedges.length -1)/2]
+    var middleedge = leftandbottomedges[(leftandbottomedges.length -1)/2 +1]
     if( ! (middleedge.fromvertex.y == bbox.miny && middleedge.tovertex.y == bbox.miny ) ){
       console.log("middleedge", middleedge)
       console.error( "middleedge not at bottom of the graph")
