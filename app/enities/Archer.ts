@@ -12,18 +12,25 @@ module TD {
       this.width = 100;
       this.height = 100;
 
-      this.x = pos.x - Math.floor(this.width / 2);
-      this.y = pos.y - Math.floor(this.height / 2);
+      this.x = pos.x
+      this.y = pos.y
 
       this.image = <HTMLImageElement>document.getElementById("imgArcher");
     }
     draw(ctx) {
-      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      ctx.drawImage(this.image,
+                    this.x - Math.floor(this.width / 2),
+                    this.y - Math.floor(this.height / 2),
+                    this.width,
+                    this.height);
       if (this.selected) {
-        ctx.rect(this.x,this.y,this.width, this.height);
+        ctx.rect(this.x - Math.floor(this.width / 2),
+                 this.y - Math.floor(this.height / 2),
+                 this.width,
+                 this.height);
         ctx.stroke();
       }
-    };
+    }
     select(selected:boolean) {
       this.selected = selected;
     }
