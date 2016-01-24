@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>The Divide</title>
+
+    <link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+    <script src="bower_components/jquery/dist/jquery.min.js" charset="utf-8"></script>
+
+    <script src="libs/typescript-collections/collections.js" charset="utf-8"></script>
+
+    <!-- Abstract -->
+    <script src="app/abstract/Range.js" charset="utf-8"></script>
+    <script src="app/abstract/Swap.js" charset="utf-8"></script>
+
+    <!-- components -->
+    <script src="app/components/Entity.js" charset="utf-8"></script>
+    <script src="app/components/BoundingBox.js" charset="utf-8"></script>
+    <script src="app/components/Position.js" charset="utf-8"></script>
+    <script src="app/components/Sprite.js" charset="utf-8"></script>
+    <script src="app/components/Draw.js" charset="utf-8"></script>
+
+    <!-- entities -->
+    <script src="app/enities/Archer.js" charset="utf-8"></script>
+    <script src="app/enities/Soldier.js" charset="utf-8"></script>
+    <script src="app/enities/Mage.js" charset="utf-8"></script>
+    <script src="app/enities/Line.js" charset="utf-8"></script>
+
+    <!-- algos -->
+    <script src="app/algo-helper.js" charset="utf-8"></script>
+    <script src="app/dcel-helper.js" charset="utf-8"></script>
+    <script src="app/dcel-checker.js" charset="utf-8"></script>
+    <script src="app/algo-entities.js" charset="utf-8"></script>
+    <script src="app/algos.js" charset="utf-8"></script>
+    <script src="app/algo-draw.js" charset="utf-8"></script>
+
+
+    <!-- main -->
+    <script src="app/main.js" charset="utf-8"></script>
+
+    <!-- slider -->
+    <script type="text/javascript">
+      var slides=new Array();
+      var captions=new Array();
+      var i=0, t, f=false;
+
+      slides[0] ="Each level contains a field is filled with characters from different classes. Divide each class into groups of the same size by making a single cut. <br/> <span class='slider-img' id='slide1'><img id='cl1' src='img/class-01.png'/><img id='cl2' src='img/class-02.png'/><img id='cl3' src='img/class-03.png'/></span>";
+      slides[1] ="Press and hold the left mouse-button. Then drag the mouse pointer and release the left mouse-button to make the cut! <span class='slider-img' id='slide2'><img id='ex1' src='img/example-01.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex2' src='img/example-02.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex3' src='img/example-03.jpg'/></span>";
+      slides[2] ="In advanced levels, the classes have been shuffled to make things a little harder for you. In these levels, you might not be able to divide each class equally with a single cut from the start. <br/>So to make things fair, you receive the ability to make members <br/>from different classes trade places! <br/> Swap characters before making the cut, but choose carefully! <br/>You may only swap them for a limited amount of times.<br/><span class='slider-img' id='slide3'><img id='ex4' src='img/example-04.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex5' src='img/example-05.jpg'/><img class='arrow' id='ar1' src='img/rightarrow.png'/><img id='ex6' src='img/example-06.jpg'/></span>";
+      slides[3] ="You can earn stars per level by successfully dividing classes. <br/>The more class groups you successfully divide in half, the more stars you'll earn! Try dividing all three classes in half with a single cut to earn the maximum amount of stars!<br/><span class='slider-img' id='slide4'><img id='str1' src='img/stars-04.png'/><img id='str2' src='img/stars-03.png'/><img id='str3' src='img/stars-02.png'/><img id='str4' src='img/stars-01.png'/></span>";
+      slides[4] ="Quickly complete levels to earn bonus points. The faster it’s done, the more points you’ll earn! <br/><br/> You may complete every level at your own pace, but being the fastest shows your friends who's boss! There can only be one<br/> Ham-Sandwich cut champ!<br/><span class='slider-img' id='slide5'><img id='time1' src='img/time-04.png'/><img id='time2' src='img/time-03.png'/><img id='time3' src='img/time-02.png'/><img id='time4' src='img/time-01.png'/></span>";
+      slides[5] ="F.A.Q. 1/4 <br/><br/> Q: If I don’t divide all classes correctly, will I still get some credit? <br/><br/> A: Yes! For each class you divide properly you will earn one star, so dividing up to three classes properly can earn you up to three stars! If you don’t manage to divide all classes properly the game will show you where you could’ve made cuts in order to earn three stars!";
+      slides[6] ="F.A.Q. 2/4 <br/><br/> Q: How do I divide a class that has an uneven number of members? <br/><br/> A: In that case, drawing the line through the class member at the center of its class distribution would divide the class into two equally-sized groups.";
+      slides[7] ="F.A.Q. 3/4 <br/><br/> Q: So what is this game even about? <br/><br/> A: Glad you asked! The goal of this game is to visualize examples for the Ham Sandwich Theorem. No, that’s not about getting the optimal ham-to-mayonnaise ratio on your sandwich. It’s actually a geometric algorithm. Click here: <a id='boldslide' href='algorithm.html'>How It Works</a>, or access this page from the main menu for a short and general description of this theorem, as well as a detailed description of the algorithms that this game is built upon.";
+      slides[8] ="F.A.Q. 4/4 <br/><br/> Q: Where can I learn more about geometric algorithms? <br/><br/> A: Well, the internet is always a good start for stuff like this, but the explanations presented there might not always be clear and easy to follow. We recommend dropping by <a id='boldslide' href='http://www.win.tue.nl/~kbuchin/' target='blank'>Kevin Buchin’s office at the TU/e</a> to ask him about ham sandwiches! Of course, aside from that, you could also just ask him about his exciting master course called Geometric Algorithms (2IMA15).";
+
+      captions[0]="img/caption-01.png";
+      captions[1]="img/caption-02.png";
+      captions[2]="img/caption-03.png";
+      captions[3]="img/caption-04.png";
+      captions[4]="img/caption-05.png";
+      captions[5]="img/caption-06.png";
+      captions[6]="img/caption-06.png";
+      captions[7]="img/caption-06.png";
+      captions[8]="img/caption-06.png";
+
+      function start(){
+          //hide table of contents when navigation action starts
+          document.getElementById("toc").style.display = "none";
+
+          if(i>=slides.length){
+              i=0;
+              document.getElementById('caption').src=captions[i];
+              document.getElementById('slide').innerHTML=slides[i];
+              i++;
+          }
+          else{
+              document.getElementById('caption').src=captions[i];
+              document.getElementById('slide').innerHTML=slides[i];
+              i++;
+          }
+          t=setTimeout("start()", 5000);
+      }
+
+      function play(){
+          if(f==false){
+              f=true;
+              start();
+          }
+      }
+
+      function Stop(){
+          clearTimeout(t);
+          f=false;
+      }
+
+      function next(){
+          //hide table of contents when navigation action starts
+          document.getElementById("toc").style.display = "none";
+
+          if(i>=slides.length){
+              i=0;
+              document.getElementById('caption').src=captions[i];
+              document.getElementById('slide').innerHTML=slides[i];
+              i++;
+
+              //hide home button if page is not first
+              if(i!=0){
+                document.getElementById("homeslider").style.display = "none";
+              } else{
+                document.getElementById("homeslider").style.display = "inline";
+              }
+          }
+          else{
+              document.getElementById('caption').src=captions[i];
+              document.getElementById('slide').innerHTML=slides[i];
+              i++;
+
+              //hide home button if page is not first
+              if(i!=0){
+                document.getElementById("homeslider").style.display = "none";
+              } else{
+                document.getElementById("homeslider").style.display = "inline";
+              }
+          }
+      }
+
+      function previous(){
+          //hide table of contents when navigation action starts
+          document.getElementById("toc").style.display = "none";
+
+          if(i>=slides.lenght){
+              i=slides.length;
+              document.getElementById('caption').src=captions[i];
+              document.getElementById('slide').innerHTML=slides[i];
+              i--;
+
+              //hide home button if page is not first
+              if(i!=0){
+                document.getElementById("homeslider").style.display = "none";
+              } else{
+                document.getElementById("homeslider").style.display = "inline";
+              }
+          }
+          else if(i<=0){
+              i=slides.length;
+              document.getElementById('caption').src=captions[i-1];
+              document.getElementById('slide').innerHTML=slides[i-1];
+              i--;
+
+              //hide home button if page is not first
+              if(i!=0){
+                document.getElementById("homeslider").style.display = "none";
+              } else{
+                document.getElementById("homeslider").style.display = "inline";
+              }
+          }
+          else if(i>slides.length){
+
+              document.getElementById('caption').src=captions[slides.length-i];
+              document.getElementById('slide').innerHTML=slides[slides.length-i];
+
+              //hide home button if page is not first
+              if(i!=0){
+                document.getElementById("homeslider").style.display = "none";
+              } else{
+                document.getElementById("homeslider").style.display = "inline";
+              }
+          }
+          else if(i<=slides.length || i>0){
+              document.getElementById('caption').src=captions[i-1];
+              document.getElementById('slide').innerHTML=slides[i-1];
+              i--;
+
+              //hide home button if page is not first
+              if(i!=0){
+                document.getElementById("homeslider").style.display = "none";
+              } else{
+                document.getElementById("homeslider").style.display = "inline";
+              }
+          }
+      }
+    </script>
+
+    <!-- temp css, put in separate file -->
+    <style type="text/css">
+    /* page title */
+    #title2
+      {
+        position: absolute;
+        top:50px;
+        right:0;
+        bottom:0;
+        left:162.5px;
+      }
+    #title3
+      {
+        position: absolute;
+        top:50px;
+        right:0;
+        bottom:0;
+        left:127.5px;
+      }
+    /* slider */
+    input, button, submit { border:none; }
+    #homeslider
+      {
+      }
+    #toc
+      {
+        margin-top:-10px;
+
+        list-style-type: none;
+
+        font-family: 'VT323', arial;
+        font-size: 24pt;
+      }
+    #toc li
+      {
+        margin-bottom:10px;
+      }
+    #content
+      {
+        position: absolute;
+        top:135px;
+        right:0;
+        bottom:0;
+        left:35px;
+
+        width:910px;
+        height:450px;
+
+        padding-right:20px;
+        padding-left:20px;
+
+        border-radius: 25px;
+        background-color: rgba(255, 255, 255, 0.85);
+      }
+    #textbox
+      {
+        height:425px;
+        overflow:hidden;
+      }
+    #textbox p
+      {
+        margin-top:15px;
+        text-align: center;
+
+        font-family: 'VT323', arial;
+        font-size: 24pt;
+      }
+    #boldslide
+      {
+        font-weight: bold;
+        color: #2b85c4;
+      }
+    #caption
+      {
+        position:absolute;
+        top:475px;
+        left:148px;
+      }
+    .slider-img
+      {
+        position:relative;
+        top:40px;
+        left:0;
+      }
+    #ex1, #ex2
+      {
+        margin-right:50px;
+      }
+    #ex2, #ex3
+      {
+      }
+    .arrow
+      {
+        position:absolute;
+        top:-72.5px;
+        margin-left:-38px;
+      }
+    #slide1
+      {
+        top:50px;
+      }
+    #slide2
+      {
+        top:90px;
+      }
+    #cl1, #cl2
+      {
+        margin-right:70px;
+      }
+    #ex4, #ex5
+      {
+        margin-right:50px;
+      }
+    #slide3
+      {
+        top:20px !important;
+      }
+    #slide4
+      {
+        top:70px;
+      }
+    #str1, #str2, #str3, #str4
+      {
+      }
+    #slide5
+      {
+        top:30px;
+      }
+    #time1, #time2, #time3, #time4
+      {
+      }
+    /* pagination */
+    #pagination
+      {
+        position: absolute;
+        top:600px;
+        right:0;
+        bottom:0;
+        left:35px;
+      }
+    #backbtn
+      {
+        position: absolute;
+        top:30px;
+        right:0;
+        bottom:0;
+        left:890px;
+      }
+    .homebtn
+      {
+        position: absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+
+        z-index:1;
+
+        width: 93px;
+        height:86px;
+
+        background: url("img/btn-home-01.png");
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+    .homebtn:hover, .homebtn:active
+      {
+        background: url("img/btn-home-02.png");
+      }
+    #rightbtn:focus, #leftbtn:focus
+      {
+        outline:0;
+      }
+    #rightbtn
+      {
+        position: absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+
+        margin-left:855px;
+
+        width: 93px;
+        height:86px;
+
+        background: url("img/btn-right-01.png");
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+    #rightbtn:hover, #rightbtn:active
+      {
+        background: url("img/btn-right-02.png");
+      }
+    #leftbtn
+      {
+        position: absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+
+        width: 93px;
+        height:86px;
+
+        background: url("img/btn-left-01.png");
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+      #leftbtn:hover, #leftbtn:active
+      {
+        background: url("img/btn-left-02.png");
+      }
+    </style>
+  </head>
+  <body>
+
+
+    <div id="loadscreen" style="background-color: white; position:absolute; width: 500px; height: 200px; padding: 250px; border: 1px solid black;">
+      Loading:
+      <div style="width: 500px; height: 40px; border: 1px solid;">
+        <div id="bar" style="width: 0%; height: 100%; background-color: orange"></div>
+      </div>
+    </div>
+
+    <canvas id="canvas" width="1000" height="700" style="border:1px solid #000000;">
+
+    </canvas>
+
+
+
+    <img id="title2" src="img/htp2.png" />
+    <!-- <img id="title3" src="img/hiw2.png" /> -->
+    <a class="homebtn" id="backbtn" href="index.html"></a>
+
+    <div id="content">
+      <div id="textbox">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+          <tr>
+            <td align="center">
+                <p id="slide">
+                  Use the arrow buttons at the bottom of the screen to
+                  navigate through the contents of this section.<br/><br/>
+                  <span style="font-weight:bold;">- Table of contents -</span><br/>
+                    <ul id="toc">
+                      <li>Divide in half!</li>
+                      <li>How to cut</li>
+                      <li>&quot;Swap-n-cut&quot;</li>
+                      <li>Ear stars!</li>
+                      <li>Be fast and earn bonus points!</li>
+                      <li>F.A.Q.</li>
+                  </ul>
+                </p>
+                <img id="caption" src="img/caption-00.png" />
+            </td>
+          </tr>
+          <!-- Autoplay:
+          <tr>
+            <td colspan="3" align="center" height="50"><input type="button" value="Play" onclick="play()" />
+                <input type="button" value="Stop" onclick="Stop()" /></td>
+          </tr> -->
+        </table>
+      </div>
+    </div>
+
+    <div id="pagination">
+      <a id="homeslider" class="homebtn" href="index.html"></a>
+      <span>
+          <input id="leftbtn" type="button" value="" onclick="previous()" />
+      </span>
+      <span>
+          <input id="rightbtn" type="button" value="" onclick="next()" />
+      </span>
+    </div>
+
+        <div style="display:none">
+          <img id="imgBackground" class="image" src="img/BG_01.svg" />
+        </div>
+
+  </body>
+</html>
