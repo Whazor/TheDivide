@@ -44,15 +44,23 @@
       var captions=new Array();
       var i=0, t, f=false;
 
-      slides[0] ="This theorem states that if there are n measureable objects in an n dimensional space, then there is one (n-1)-dimensional slice that cuts them all in half.<br/><br/>For example, suppose you and a friend want to equally share a cake together. With a regular cake like this it looks easy, but what if someone cut out a piece from the center of the cake leaving a gaping hole. How can you divide this cake with just one cut?";
-      slides[1] ="content 2";
-      slides[2] ="content 3";
-      slides[3] ="content 4";
+      slides[0] ="This theorem states that if there are n measureable objects in an n dimensional space, then there is one (n-1)-dimensional slice that cuts them all in half.<br/><br/>For example, suppose you and a friend want to equally share a pizza together. With a regular pizza like this it looks easy, but what if someone cut out a piece from the center of the pizza leaving a gaping hole. How can you divide this pizza with just one cut? <br/><span class='slider-img' id='slide11'><img id='p1' src='img/pizza-01.png'/><img class='arrow' id='ar11' src='img/rightarrow.png'/><img id='p2' src='img/pizza-02.png'/><img class='arrow' id='ar12' src='img/qmark.png'/></span>";
+      slides[1] ="Without the hole, any cut through the center of the pizza would work. The key now is to cut through the center of the pizza and through the center of the hole. <br/><span class='slider-img' id='slide12'><img id='p3' src='img/pizza-03.png'/><img class='arrow' id='ar21' src='img/rightarrow.png'/><img id='p4' src='img/pizza-04.png'/><img class='arrow' id='ar22' src='img/rightarrow.png'/><img id='p5' src='img/pizza-05.png'/></span><br/>Then the pizza and the hole would be equally divided, so you and your friend can get the same amount of pizza! Regardless of how the toppings are spread in this example ;)";
+      slides[2] ="This game follows the same intuition as the pizza example. The difference is that instead of a pizza, you need to divide groups of characters with the same appearance in half. To make things more challenging, we challenge you to divide three different groups of characters simultaneously using only a single cut! The better and faster you do this, the more points you’ll earn.<br/><br/> It’s a simple as that!";
+      slides[3] ="This characters in this game are a random distribution of points. They belong to different categories, corresponding to the different classes (i.e. mage, solder or archer), and are guaranteed to have a solution (i.e. a possible cut exists).<br/><br/>After the initial distribution of points, the algorithm swaps a few points from varying categories around to make the solution harder to find. After that, it is up to the player make the ham-sandwich cut, which might require the player to perform a few swaps first in order to create a composition of three classes that can be separated in half with a single cut.";
+      slides[4] ="<span id='boldslide'>The short version:</span><br/><br/>The player’s performance is measured by detecting how many different point sets the player successfully cut in half. For each point set, the algorithm computes the area in which all possible cuts can be made. Placing a cut within this area would successfully divide that particular point set in half. To find the cut(s) the divide(s) the point sets from all categories in half, the algorithm finds the intersection between the areas in which cuts can be placed for each point set. Placing a cut within this intersection area would successfully divide all point sets from different categories in half.";
+      slides[5] ="<span id='boldslide'>The long version:</span><br/><br/>The ham-sandwich cut area for each of the different point sets is computed by considering the distribution of each pointset as a primal graph, which can be dualized to obtain a graph containing lines. Dualizing a graph turns points (P_x,P_y) into lines <br/>(P_x*m-P_y) and vice versa. Due to this property, it can be seen that if a point intersects a line in the prime graph, then the dual-line from that point will intersect with the dual-point from the line in the dual graph.";
+      slides[6] ="<span id='boldslide'>The long version:</span><br/><br/>Using this property of duality, observe that - for each point set - if all dual-lines intersect at a point, then the dual of that point is a line that successfully divides the objects in half. So when multiple cuts are possible, the result should contain an area in which viable cuts can be made that to successfully divide the objects in half.  In the following text, these areas are referred to as <span id='boldslide'>viable-cut areas</span>. The underlying algorithm uses this concept to find possible cuts for individual or combined pointset.";
+      slides[7] ="<span id='boldslide'>The long version:</span><br/><br/>When overlapping the <span id='boldslide'>viable cut areas</span> from each point set, the intersection of them is the area in which a cut can be made that successfully divide all sets of objects in half. This area is shown to the player when either the cut that was submitted separated less than all point sets in half correctly, or when the player chooses to review the possible answers after completing a match. <br/><br/>The <span id='boldslide'>viable-cut area</span> overview can be manually accessed from the score review after completing a match.";
 
       captions[0]="img/caption-07.png";
       captions[1]="img/caption-07.png";
-      captions[2]="img/caption-08.png";
+      captions[2]="img/caption-07.png";
       captions[3]="img/caption-08.png";
+      captions[4]="img/caption-08.png";
+      captions[5]="img/caption-08.png";
+      captions[6]="img/caption-08.png";
+      captions[7]="img/caption-08.png";
 
       function start(){
           //hide table of contents when navigation action starts
@@ -228,7 +236,7 @@
       }
     #textbox
       {
-        height:425px;
+        height:440px;
         overflow:hidden;
       }
     #textbox p
@@ -242,7 +250,6 @@
     #boldslide
       {
         font-weight: bold;
-        color: #2b85c4;
       }
     #caption
       {
@@ -256,52 +263,37 @@
         top:40px;
         left:0;
       }
-    #ex1, #ex2
-      {
-        margin-right:50px;
-      }
-    #ex2, #ex3
-      {
-      }
     .arrow
       {
         position:absolute;
         top:-72.5px;
         margin-left:-38px;
       }
-    #slide1
+    #ar11, #ar21, #ar22
       {
-        top:50px;
+        margin-left:20px;
       }
-    #slide2
+    #ar12 /*q-mark */
       {
-        top:90px;
+        margin-left:15px;
       }
-    #cl1, #cl2
+    #ar21, #ar22
       {
-        margin-right:70px;
+        top: 55px;
       }
-    #ex4, #ex5
+    #p2, #p4, #p5
       {
-        margin-right:50px;
+        margin-left:65px;
       }
-    #slide3
+    #slide11
       {
-        top:20px !important;
+        top:20px;
       }
-    #slide4
+    #slide12
       {
-        top:70px;
-      }
-    #str1, #str2, #str3, #str4
-      {
-      }
-    #slide5
-      {
-        top:30px;
-      }
-    #time1, #time2, #time3, #time4
-      {
+        display:block;
+        margin-bottom:30px;
+        top:35px;
       }
     /* pagination */
     #pagination
@@ -418,6 +410,7 @@
                     <ul id="toc">
                       <li>The Ham-Sandwich Theorem</li>
                       <li>Underlying Algorithms and Data Structures</li>
+                      <li>(Short Version &amp; Long Version)</li>
                   </ul>
                 </p>
                 <img id="caption" src="img/caption-00.png" />
