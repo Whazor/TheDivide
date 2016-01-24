@@ -74,7 +74,7 @@ module Algo {
     return points_above.concat(points_below);
   }
 
-  export function findCut(army: Array<TD.Entity>): TD.Line {
+  export function findCut(army: Array<TD.Entity>): AlgoLine[] {
     var archerarmy: Array<TD.Archer> = [];
     var soldierarmy: Array<TD.Soldier> = [];
     var magearmy: Array<TD.Mage> = [];
@@ -95,7 +95,12 @@ module Algo {
       throw new Error("Entity found that is not Soldier, Archer or Mage")
     }
 
-    var bbox = findBoundingBox(dualizePoints(army))
+    var archerbbox = findBoundingBox(dualizePoints(archerarmy))
+    var magebbox = findBoundingBox(dualizePoints(magearmy))
+    var soldierbbox = findBoundingBox(dualizePoints(soldierarmy))
+    var bbox = uniteBoundingBoxes(archerbbox, magebbox, soldierbbox)
+
+    console.log("bounding box",bbox)
     var archerDCEL = makearrangement(dualizePoints(archerarmy), bbox);
     var mageDCEL = makearrangement(dualizePoints(magearmy), bbox);
     var soldierDCEL = makearrangement(dualizePoints(soldierarmy), bbox);
@@ -104,14 +109,39 @@ module Algo {
     Algo.Draw.clearCanvas();
     Algo.Draw.setViewport(bbox.minx, bbox.miny, bbox.width(), bbox.height());
     Algo.Draw.DrawDcel(archerDCEL, "green");
-    Algo.Draw.DrawDcel(mageDCEL, "blue");
-    Algo.Draw.DrawDcel(soldierDCEL, "red");
+    //Algo.Draw.DrawDcel(mageDCEL, "blue");
+    //Algo.Draw.DrawDcel(soldierDCEL, "red");
 
-    var dualPos:TD.Position = findPointInRegions(findFeasibleRegion(archerDCEL),
-                                              findFeasibleRegion(mageDCEL),
-                                              findFeasibleRegion(soldierDCEL));
 
-    return dualizePoint(dualPos);
+
+    var region = findFeasibleRegion(archerDCEL)
+    var boundarypoints = []
+    //for(var i =0 ; i<region.length; i++){
+      var face = region[0]
+      var startedge = face.outerComponent
+      boundarypoints.push(startedge.fromvertex)
+      var workingedge =startedge.next
+      do{
+        boundarypoints.push(workingedge.fromvertex)
+        workingedge = workingedge.next
+      }while (workingedge!==startedge)
+    //}
+
+    return dualizePoints(boundarypoints)
+    // var dualPos:TD.Position = findPointInRegions(findFeasibleRegion(archerDCEL),
+    //                                           findFeasibleRegion(mageDCEL),
+    //                                           findFeasibleRegion(soldierDCEL));
+    //
+    // return dualizePoint(dualPos);
+  }
+
+  function uniteBoundingBoxes(bbox1, bbox2, bbox3){
+    var bbox = new AlgoBoundingBox()
+    bbox.minx = Math.min(bbox1.minx, bbox2.minx, bbox3.minx)
+    bbox.maxx = Math.max(bbox1.maxx, bbox2.maxx, bbox3.maxx)
+    bbox.miny = Math.min(bbox1.miny, bbox2.miny, bbox3.miny)
+    bbox.maxy = Math.max(bbox1.maxy, bbox2.maxy, bbox3.maxy)
+    return bbox
   }
 
   function dualizePoints(points: Array<TD.Position>): Array<AlgoLine>{
@@ -211,15 +241,6 @@ module Algo {
       var startedge = dcel.outerface.outerComponent
       var intersections:Array<PositionOnEdge> = []
       var workingedge = startedge
-
-//DEBUG tool
-//       var inters = []
-//       for( var i =0; i<dcel.edges.length ; i++){
-//         var dbintersection = intersectEdgeLine(dcel.edges[i], line)
-//         inters.push(dbintersection)
-//       }
-//       console.log("We expect ", inters.length, "intersections", inters)
-
       do{
         var intersection = intersectEdgeLine(workingedge, line)
         if (intersection !== null){
@@ -273,17 +294,13 @@ module Algo {
       for(var i=0; i<intersections.length-1; i++){
         Algo.addEdgeInFace(vertices[i], vertices[i+1], faces[i], dcel)
       }
-
     }
 
-
     //first find BoundingBox
-    var boundingBox:AlgoBoundingBox =  findBoundingBox(lines)
-    console.log ("BoundingBox", boundingBox)
     var graph = initialDCELfromBoundingBox(boundingBox)
     for (var i=0; i <lines.length; i++){
       // add line`
-      console.log("adding line", i+1)
+      //console.log("adding line", i+1)
       addLineToDCEL(lines[i], graph);
 
       //debug stuff
@@ -299,14 +316,21 @@ module Algo {
         return true
       }
       return false
+    }
 
+    function isEdgeLeadingToTopMostVertex(edge:Halfedge){
+      if (edge.fromvertex.y <= edge.tovertex.y && edge.next.fromvertex.y >= edge.next.tovertex.y){
+        return true
+      }
+      return false
     }
     //returns the faces in which the dual point may lie to represent a cut
     // cutting a given army in two equal parts in the primal plane.
     var workingedge = arrangment.outerface.outerComponent
-    var minx = arrangment.boundingBox.minx
-    var leftedges: Array<Halfedge> =[]
-    while (! (workingedge.tovertex.x == minx && workingedge.fromvertex.x != minx)){
+    var bbox = arrangment.boundingBox
+
+    var leftandbottomedges: Array<Halfedge> =[]
+    while (! (workingedge.tovertex.x == bbox.minx && workingedge.fromvertex.x != bbox.minx)){
       workingedge = workingedge.next
     }
 
@@ -314,26 +338,32 @@ module Algo {
     workingedge = workingedge.next //workingedge is now the first edge with both from.x and to.x = minx
                                    // (i.e. leftupper edge)
 
-    while (workingedge.tovertex.x == minx ){
-      leftedges.push(workingedge)
+    while (workingedge.tovertex.x !== bbox.maxx ){
+      leftandbottomedges.push(workingedge)
       workingedge = workingedge.next
     }
 
-    if (leftedges.length %2 == 0 ){
-      throw Error("Unexpected even number of leftmost edges "+ leftedges.length)
+    if (leftandbottomedges.length %2 == 0 ){
+      throw Error("Unexpected even number of leftandbottomedges  "+ leftandbottomedges.length)
     }
-    console.log("All leftedges", leftedges)
+    console.log("All leftandbottomedges", leftandbottomedges)
 
+    //TODO Assumption, feasibleFaces are arenged in a vertical manner!
+    //TODO check whether final top edges is at top (i.e we never went left)
 
-    var middleleftedge = leftedges[(leftedges.length -1)/2]
-    var startingFace = middleleftedge.twin.incidentFace
+    var middleedge = leftandbottomedges[(leftandbottomedges.length -1)/2]
+    if( ! (middleedge.fromvertex.y == bbox.miny && middleedge.tovertex.y == bbox.miny ) ){
+      console.log("middleedge", middleedge)
+      console.error( "middleedge not at bottom of the graph")
+    }
+    var startingFace = middleedge.twin.incidentFace
     var feasibleFaces= [startingFace]
 
     //itrate trough the faces until we hit the outer face again
-    workingedge= middleleftedge.twin
+    workingedge= middleedge.twin
     while(true){
       var dbstartedge = workingedge
-      while (! isEdgeLeadingToRightMostVertex(workingedge)){
+      while (! isEdgeLeadingToTopMostVertex(workingedge)){
         workingedge = workingedge.next
         //console.log("edge index", arrangment.edges.indexOf(workingedge), "start", arrangment.edges.indexOf(dbstartedge), workingedge)
         if (workingedge === dbstartedge){
@@ -351,11 +381,8 @@ module Algo {
       }
     }
     console.log("feasibleFaces", feasibleFaces)
-
-
-
-    //TODO
-    throw Error("findFeasibleRegion not yet implemented" )    }
+    return feasibleFaces
+   }
 
   function findPointInRegions(region1: Array<Face>, region2: Array<Face>, region3: Array<Face>): TD.Position{
     //returns a point in all 3 regions, or null when this is impossible

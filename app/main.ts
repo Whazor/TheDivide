@@ -9,6 +9,8 @@ module TD {
     things: Array<Entity> = [];
     line: Line;
 
+    archerlines: Array<Algo.AlgoLine>
+
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
@@ -19,6 +21,7 @@ module TD {
       } catch( TypeError){
         console.info("couldnt init debug context")
       }
+
 
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
@@ -42,6 +45,7 @@ module TD {
           this.things.push(new TD.Archer(possies3[i]));
       }
 
+
       var swaps = 1;
       for (let i = 0; i < swaps; i++) {
           var s1 = Math.floor(Math.random() * n*3);
@@ -50,6 +54,10 @@ module TD {
           var second = this.things[s2];
           TD.swap(first, second);
       }
+
+      //debug!
+      this.archerlines = Algo.findCut(this.things)
+
 
       this.draw();
       var bla = this;
@@ -64,10 +72,26 @@ module TD {
       var image = <HTMLImageElement>document.getElementById("imgBackground");
       this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
-      this.ctx.beginPath();
-      this.ctx.moveTo(this.line.point1.x, this.line.point1.y);
-      this.ctx.lineTo(this.line.point2.x, this.line.point2.y);
-      this.ctx.stroke();
+      if((<HTMLInputElement>document.getElementById("creationline")).checked === true){
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.line.point1.x, this.line.point1.y);
+        this.ctx.lineTo(this.line.point2.x, this.line.point2.y);
+        this.ctx.stroke();
+      }
+
+      if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
+        for (var i = 0; i < this.archerlines.length; i++){
+          var line = this.archerlines[i]
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, line.heightatyaxis);
+          this.ctx.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
+          this.ctx.stroke();
+        }
+
+        console.log("ARCHERS!")
+      }
+
+
 
       // draw all the things
       for (let i = 0; i < this.things.length; i++) {
@@ -119,7 +143,7 @@ module TD {
 
         //find a cut
         console.log("findCut")
-        Algo.findCut(this.things);
+        this.archerlines = Algo.findCut(this.things);
       }
     }
   }
