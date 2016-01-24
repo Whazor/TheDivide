@@ -95,13 +95,14 @@ module Algo {
       throw new Error("Entity found that is not Soldier, Archer or Mage")
     }
 
-    var archerDCEL = makearrangement(dualizePoints(archerarmy));
-    var mageDCEL = makearrangement(dualizePoints(magearmy));
-    var soldierDCEL = makearrangement(dualizePoints(soldierarmy));
+    var bbox = findBoundingBox(dualizePoints(army))
+    var archerDCEL = makearrangement(dualizePoints(archerarmy), bbox);
+    var mageDCEL = makearrangement(dualizePoints(magearmy), bbox);
+    var soldierDCEL = makearrangement(dualizePoints(soldierarmy), bbox);
 
 
     Algo.Draw.clearCanvas();
-    Algo.Draw.setViewport(-10, -2000, 20, 4000);
+    Algo.Draw.setViewport(bbox.minx, bbox.miny, bbox.width(), bbox.height());
     Algo.Draw.DrawDcel(archerDCEL, "green");
     Algo.Draw.DrawDcel(mageDCEL, "blue");
     Algo.Draw.DrawDcel(soldierDCEL, "red");
@@ -128,50 +129,51 @@ module Algo {
     return result;
   }
 
+  function findBoundingBox(lines: Array<AlgoLine>): AlgoBoundingBox{
+    if (lines.length < 2 ){
+      throw Error("Not enough lines provided")
+    }
+    var sortedLines = lines.sort(function(line1:AlgoLine, line2:AlgoLine){return line1.slope- line2.slope})
 
-  function makearrangement(lines: Array<AlgoLine>): DCEL{
+    var point = Algo.intersectLines(sortedLines[0],sortedLines[1]);
+    var result = new AlgoBoundingBox
+    result.minx=point.x;
+    result.maxx=point.x;
+    result.miny=point.y;
+    result.maxy=point.y;
 
-    function findBoundingBox(lines: Array<AlgoLine>): AlgoBoundingBox{
-      if (lines.length < 2 ){
-        throw Error("Not enough lines provided")
-      }
-      var sortedLines = lines.sort(function(line1:AlgoLine, line2:AlgoLine){return line1.slope- line2.slope})
+    //Outermost (in both x and y) intersections are between lines of adjecent slope
+    console.log("sortedLines",sortedLines)
+    for(var i = 0; i<sortedLines.length-1 ; i++){
+      var candidatepoint = intersectLines(sortedLines[i],sortedLines[i+1])
+      // console.log("candidatepoint", candidatepoint)
 
-      var point = Algo.intersectLines(sortedLines[0],sortedLines[1]);
-      var result = new AlgoBoundingBox
-      result.minx=point.x;
-      result.maxx=point.x;
-      result.miny=point.y;
-      result.maxy=point.y;
-
-      //Outermost (in both x and y) intersections are between lines of adjecent slope
-      console.log("sortedLines",sortedLines)
-      for(var i = 0; i<sortedLines.length-1 ; i++){
-        var candidatepoint = intersectLines(sortedLines[i],sortedLines[i+1])
-        // console.log("candidatepoint", candidatepoint)
-
-        if (candidatepoint.x < result.minx ){
-          result.minx=candidatepoint.x
-        } else if (candidatepoint.x > result.maxx){
-          result.maxx = candidatepoint.x
-        }
-
-        if (candidatepoint.y < result.miny ){
-          result.miny =candidatepoint.y
-        } else if (candidatepoint.y > result.maxy){
-          result.maxy = candidatepoint.y
-        }
-
+      if (candidatepoint.x < result.minx ){
+        result.minx=candidatepoint.x
+      } else if (candidatepoint.x > result.maxx){
+        result.maxx = candidatepoint.x
       }
 
-      //relax bounding box a little (such that no intersections are actually on the boundingBox)
-
-      result.minx = result.minx - 5;
-      result.maxx = result.maxx + 5;
-      result.miny = result.miny - 5;
-      result.maxy = result.maxy + 5;
-      return result;
+      if (candidatepoint.y < result.miny ){
+        result.miny =candidatepoint.y
+      } else if (candidatepoint.y > result.maxy){
+        result.maxy = candidatepoint.y
       }
+
+    }
+
+    //relax bounding box a little (such that no intersections are actually on the boundingBox)
+
+    result.minx = result.minx - 5;
+    result.maxx = result.maxx + 5;
+    result.miny = result.miny - 5;
+    result.maxy = result.maxy + 5;
+    return result;
+    }
+
+
+
+  function makearrangement(lines: Array<AlgoLine>, boundingBox: AlgoBoundingBox): DCEL{
 
     function initialDCELfromBoundingBox(bBox:AlgoBoundingBox):DCEL{
       var topleft = new Vertex(bBox.minx, bBox.maxy)
@@ -378,8 +380,7 @@ module Algo {
     return line;
   }
 
-
-  export function intersectEdgeLine(edge:Halfedge, line:AlgoLine){
+  function intersectEdgeLine(edge:Halfedge, line:AlgoLine){
     //returns intersection point (if any) otherwise returns null
     if (edge.tovertex.x !== edge.fromvertex.x){
       //create line for edge
