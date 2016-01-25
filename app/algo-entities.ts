@@ -91,7 +91,7 @@ module Algo{
     constructor(public archerlines:Array<Array<AlgoLine>>,
                 public soldierlines:Array<Array<AlgoLine>>,
                 public magelines:Array<Array<AlgoLine>>,
-                public solution:AlgoLine ){ }
+                public solutions:Array<AlgoLine> ){ }
   }
 
 }

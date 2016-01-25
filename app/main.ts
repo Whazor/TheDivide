@@ -93,7 +93,7 @@ module TD {
 
       gcontext.clearRect(0, 0, this.canvas.width, this.canvas.height);
       var image = <HTMLImageElement>document.getElementById("imgBackground");
-      //gcontext.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+      gcontext.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
       if((<HTMLInputElement>document.getElementById("creationline")).checked === true){
         gcontext.beginPath();
@@ -114,6 +114,10 @@ module TD {
         if((<HTMLInputElement>document.getElementById("magecutlines")).checked === true){
           drawLines(this.cut.magelines,
                     ["#000031","#000062","#0000ab", "#0000f5"]) //blues
+        }
+        if((<HTMLInputElement>document.getElementById("solution")).checked === true){
+          drawLines([this.cut.solutions],
+                    ["#000000"]) //black
         }
       }
 

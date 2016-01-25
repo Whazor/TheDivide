@@ -74,8 +74,6 @@ module Algo {
     return points_above.concat(points_below);
   }
 
-  export var archerDCEL:DCEL
-
   export function findCut(army: Array<TD.Entity>):Algo.Cut {
     var archerarmy: Array<TD.Archer> = [];
     var soldierarmy: Array<TD.Soldier> = [];
@@ -103,7 +101,7 @@ module Algo {
     var bbox = uniteBoundingBoxes(archerbbox, magebbox, soldierbbox)
 
     console.log("bounding box",bbox)
-    archerDCEL = makearrangement(dualizePoints(archerarmy), bbox);
+    var archerDCEL = makearrangement(dualizePoints(archerarmy), bbox);
     var mageDCEL = makearrangement(dualizePoints(magearmy), bbox);
     var soldierDCEL = makearrangement(dualizePoints(soldierarmy), bbox);
 
@@ -115,8 +113,6 @@ module Algo {
     Algo.Draw.DrawDcel(mageDCEL, "blue");
     Algo.Draw.DrawDcel(soldierDCEL, "red");
 
-  //  var region = findFeasibleRegion(archerDCEL)
-
     function findCutlines(region){
       var lines = []
       for(var i =0 ; i<region.length; i++){
@@ -127,11 +123,15 @@ module Algo {
       return lines
     }
 
+    var archerFeas =findFeasibleRegion(archerDCEL)
+    var soldierFeas= findFeasibleRegion(soldierDCEL)
+    var mageFeas = findFeasibleRegion(mageDCEL)
+
     return new Algo.Cut(
-        findCutlines(findFeasibleRegion(archerDCEL)),
-        findCutlines(findFeasibleRegion(soldierDCEL)),
-        findCutlines(findFeasibleRegion(mageDCEL)),
-        undefined
+        findCutlines(archerFeas),
+        findCutlines(soldierFeas),
+        findCutlines(mageFeas),
+        findPointsInRegions(archerFeas, soldierFeas, mageFeas)
     )
   }
 
@@ -144,7 +144,7 @@ module Algo {
     return bbox
   }
 
-  function dualizePoints(points: Array<TD.Position>): Array<AlgoLine>{
+  export function dualizePoints(points: Array<TD.Position>): Array<AlgoLine>{
     if (points.length===0){
       console.warn("Request to dualize 0 points")
     }
@@ -382,11 +382,45 @@ module Algo {
     return feasibleFaces
    }
 
-  function findPointInRegions(region1: Array<Face>, region2: Array<Face>, region3: Array<Face>): TD.Position{
-    //returns a point in all 3 regions, or null when this is impossible
+  function findPointsInRegions(region1: Array<Face>, region2: Array<Face>, region3: Array<Face>): Array<Algo.AlgoLine>{
+    //determine points in region 1
+    var points = []
+    for(var i =0 ; i<region1.length; i++){
+      var face = region1[i]
+      var grid = Algo.gridPointsInFace(.1, 5 , face)
+      points = points.concat(grid);
+    }
 
-    throw Error("findPointInRegions not yet implemented" )
-    //TODO
+    var region2bb = region2.map(faceBoundingbox)
+    var region3bb = region3.map(faceBoundingbox)
+
+    console.log(region1, region2, region3, region2bb, region3bb)
+    //yintervals of these faces are disdjunct
+    var region2points = []
+    for (var i=0; i<points.length; i++){
+      var point = points[i]
+      for(var j=0; j<region2bb.length; j++){
+        if (Algo.inInterval(point.y, region2bb[j].miny, region2bb[j].maxy)){
+          if ( isInFace(point, region2[j])){
+            region2points.push(point)
+          }
+        }
+      }
+    }
+
+    var region3points = []
+    for(var i=0; i<region2points.length; i++){
+      var point = region2points[i]
+      for (var j=0; j<region3bb.length; j++){
+        if (Algo.inInterval(point.y, region3bb[j].miny, region3bb[j].maxy)){
+          if ( isInFace(point, region3[j])){
+            region3points.push(point)
+          }
+        }
+      }
+    }
+    console.log("archers", points,"two types", region2points, "solutions", region3points )
+    return Algo.dualizePoints(region3points)
     }
 
   function dualizePoint(point: TD.Position):TD.Line{

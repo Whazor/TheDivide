@@ -64,8 +64,7 @@ module Algo{
    return true
  }
 
- export function gridPointsInFace(xspacing:number, yspacing:number, face:Algo.Face){
-   //first compute a boundingBox
+ export function faceBoundingbox(face:Algo.Face):Algo.AlgoBoundingBox{
    var bBox = new Algo.AlgoBoundingBox()
 
    var startedge = face.outerComponent
@@ -91,6 +90,12 @@ module Algo{
 
      workingedge = workingedge.next
    }
+   return bBox
+ }
+
+ export function gridPointsInFace(xspacing:number, yspacing:number, face:Algo.Face){
+   //first compute a boundingBox
+   var bBox = faceBoundingbox(face)
 
    //Then create gridPointsInFace
    var xcoords = [-xspacing, 0] //slopes
