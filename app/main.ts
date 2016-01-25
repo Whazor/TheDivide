@@ -56,7 +56,7 @@ module TD {
           TD.swap(first, second);
       }
 
-      this.draw();
+      this.draw(this.ctx);
       var bla = this;
       // this.canvas.onclick = function(e) {
       //   bla.click(e);
@@ -86,7 +86,7 @@ module TD {
           bla.playerLine.point2 = current;
           bla.playerLine = TD.extendLine(bla.playerLine, TD.width, TD.height);
         }
-        bla.draw();
+        bla.draw(bla.ctx);
       });
 
       this.canvas.addEventListener("mouseup", function(e: MouseEvent) {
@@ -95,27 +95,26 @@ module TD {
         isCreatingLine = false;
       });
 
-      // this.canvas.onclick = function(e) {
-      //   bla.click(e);
-      // }
-      //
-      // document.getElementById("dualplane").onchange = function(){
-      //   if ((<HTMLInputElement>document.getElementById("dualplane")).checked){
-      //     document.getElementById("debug").style.visibility = "visible"
-      //   } else {
-      //     document.getElementById("debug").style.visibility = "hidden"
-      //   }
-      // }
-      // var game = this
-      // document.getElementById("archercutlines").onchange = function(){game.draw(game.ctx)}
-      // document.getElementById("soldiercutlines").onchange = function(){game.draw(game.ctx)}
-      // document.getElementById("magecutlines").onchange = function(){game.draw(game.ctx)}
-      // document.getElementById("creationline").onchange = function(){game.draw(game.ctx)}
+      this.canvas.onclick = function(e) {
+        bla.click(e);
+      }
+
+      document.getElementById("dualplane").onchange = function(){
+        if ((<HTMLInputElement>document.getElementById("dualplane")).checked){
+          document.getElementById("debug").style.visibility = "visible"
+        } else {
+          document.getElementById("debug").style.visibility = "hidden"
+        }
+      }
+      var game = this
+      document.getElementById("archercutlines").onchange = function(){game.draw(game.ctx)}
+      document.getElementById("soldiercutlines").onchange = function(){game.draw(game.ctx)}
+      document.getElementById("magecutlines").onchange = function(){game.draw(game.ctx)}
+      document.getElementById("creationline").onchange = function(){game.draw(game.ctx)}
 
     }
 
-    draw() {
-      var gcontext = this.ctx;
+    draw(gcontext) {
       function drawLines(lines, colors){
         for (var i = 0; i < lines.length; i++){
           gcontext.strokeStyle =  colors[i]
