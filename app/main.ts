@@ -41,7 +41,7 @@ module TD {
       }
 
 
-      var swaps = 1;
+      var swaps = 3;
       for (let i = 0; i < swaps; i++) {
           var s1 = Math.floor(Math.random() * n*3);
           var s2 = Math.floor(Math.random() * n*3);
