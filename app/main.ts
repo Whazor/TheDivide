@@ -9,11 +9,12 @@ module TD {
     things: Array<Entity> = [];
     line: Line;
 
-    archerlines
+    cut: Algo.Cut
 
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
+      console.log(this.ctx)
 
       try{
         var debugctx = (<HTMLCanvasElement>document.getElementById("debug")).getContext("2d");
@@ -55,9 +56,6 @@ module TD {
           TD.swap(first, second);
       }
 
-      //debug!
-      this.archerlines = Algo.findCut(this.things)
-
 
       this.draw();
       var bla = this;
@@ -67,10 +65,26 @@ module TD {
     }
 
     draw() {
+      console.log(this.ctx)
+      var context = this.ctx
+      function drawLines(lines, colors){
+        for (var i = 0; i < lines.length; i++){
+          context.strokeStyle =  colors[i]
+          for (var j = 0; j < lines[i].length; j++){
+            var line = lines[i][j]
+            console.log("drawing line", line)
+            context.beginPath();
+            context.moveTo(0, line.heightatyaxis);
+            context.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
+            context.stroke();
+          }
+        }
+      }
+
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       var image = <HTMLImageElement>document.getElementById("imgBackground");
-      this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+      //this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
       if((<HTMLInputElement>document.getElementById("creationline")).checked === true){
         this.ctx.beginPath();
@@ -79,20 +93,21 @@ module TD {
         this.ctx.stroke();
       }
 
-
-      if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
-        console.log("ARCHERS!", this.archerlines)
-        var colors = ["red", "green", "blue", "black", "pink"]
-        for (var i = 0; i < this.archerlines.length; i++){
-          this.ctx.strokeStyle =  colors[i]
-          var lines = this.archerlines[i]
-          for (var j = 0; j < lines.length; j++){
-            var line = lines[j]
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, line.heightatyaxis);
-            this.ctx.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
-            this.ctx.stroke();
-          }
+      if (this.cut){
+        if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
+          console.log("ARCHERS!", this.cut.archerlines)
+          drawLines(this.cut.archerlines,
+                    ["#330031","#660062","#b300ab", "#ff00f5"]) //purles
+        }
+        if((<HTMLInputElement>document.getElementById("soldiercutlines")).checked === true){
+          console.log("soldiers!", this.cut.soldierlines)
+          drawLines(this.cut.soldierlines,
+                    ["#330000","#660000","#b30000", "#ff0000"]) //reds
+        }
+        if((<HTMLInputElement>document.getElementById("magecutlines")).checked === true){
+          console.log("mages!", this.cut.magelines)
+          drawLines(this.cut.magelines,
+                    ["#000031","#000062","#0000ab", "#0000f5"]) //blues
         }
       }
 
@@ -148,7 +163,7 @@ module TD {
 
         //find a cut
         console.log("findCut")
-        this.archerlines = Algo.findCut(this.things);
+        this.cut = Algo.findCut(this.things);
       }
     }
   }

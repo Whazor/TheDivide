@@ -75,9 +75,8 @@ module Algo {
   }
 
   export var archerDCEL:DCEL
-  export var archerFeas
 
-  export function findCut(army: Array<TD.Entity>): Array<Array<AlgoLine>> {
+  export function findCut(army: Array<TD.Entity>):Algo.Cut {
     var archerarmy: Array<TD.Archer> = [];
     var soldierarmy: Array<TD.Soldier> = [];
     var magearmy: Array<TD.Mage> = [];
@@ -115,18 +114,24 @@ module Algo {
     Algo.Draw.DrawDcel(mageDCEL, "blue");
     Algo.Draw.DrawDcel(soldierDCEL, "red");
 
+  //  var region = findFeasibleRegion(archerDCEL)
 
-
-    var region = findFeasibleRegion(archerDCEL)
-    archerFeas = region
-    var lines = []
-    for(var i =0 ; i<region.length; i++){
-      var face = region[i]
-      var grid = Algo.gridPointsInFace(.1, 20, face)
-      lines.push(dualizePoints(grid))
+    function findCutlines(region){
+      var lines = []
+      for(var i =0 ; i<region.length; i++){
+        var face = region[i]
+        var grid = Algo.gridPointsInFace(.1, 20, face)
+        lines.push(dualizePoints(grid))
+      }
+      return lines
     }
 
-    return lines
+    return new Algo.Cut(
+        findCutlines(findFeasibleRegion(archerDCEL)),
+        findCutlines(findFeasibleRegion(mageDCEL)),
+        findCutlines(findFeasibleRegion(soldierDCEL)),
+        undefined
+    )
   }
 
   function uniteBoundingBoxes(bbox1, bbox2, bbox3){
