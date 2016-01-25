@@ -92,14 +92,24 @@ module Algo{
      workingedge = workingedge.next
    }
 
-   console.log("boundingBox of the face", bBox)
-
    //Then create gridPointsInFace
+   var xcoords = [-xspacing, 0] //slopes
+   var xit = xspacing
+   while(xit< bBox.maxx){
+     xcoords.push(xit)
+     xit = xit*2
+   }
+   var xit = -xspacing
+   while(xit> bBox.minx){
+     xcoords.push(xit)
+     xit = xit*2
+   }
+
    var gridpoints:Array<TD.Position> = []
-   for(var xit=0; xit<bBox.width(); xit+=xspacing){
+   for(var i=0; i<xcoords.length; i++){
      for(var yit=0; yit<bBox.height(); yit+=yspacing){
        var pos = new TD.Position()
-       pos.x = bBox.minx + xit
+       pos.x = xcoords[i]
        pos.y = bBox.miny + yit
        if( isInFace(pos, face)){
          gridpoints.push(pos)

@@ -87,4 +87,11 @@ module Algo{
     //Q: Is the overarching structure necesarry?
   }
 
+  export class Cut{
+    constructor(public archerlines:Array<Array<AlgoLine>>,
+                public soldierlines:Array<Array<AlgoLine>>,
+                public magelines:Array<Array<AlgoLine>>,
+                public solution:AlgoLine ){ }
+  }
+
 }

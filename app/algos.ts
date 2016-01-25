@@ -75,9 +75,8 @@ module Algo {
   }
 
   export var archerDCEL:DCEL
-  export var archerFeas
 
-  export function findCut(army: Array<TD.Entity>): Array<Array<AlgoLine>> {
+  export function findCut(army: Array<TD.Entity>):Algo.Cut {
     var archerarmy: Array<TD.Archer> = [];
     var soldierarmy: Array<TD.Soldier> = [];
     var magearmy: Array<TD.Mage> = [];
@@ -110,23 +109,30 @@ module Algo {
 
 
     // Algo.Draw.clearCanvas();
-    // Algo.Draw.setViewport(bbox.minx, bbox.miny, bbox.width(), bbox.height());
+    // Algo.Draw.setViewport(bbox.minx+500, bbox.miny+50000, bbox.width()-1000, bbox.height()-100000);
+    //   //Reduce viewport by bounding box buffer
     // Algo.Draw.DrawDcel(archerDCEL, "green");
-    //Algo.Draw.DrawDcel(mageDCEL, "blue");
-    //Algo.Draw.DrawDcel(soldierDCEL, "red");
+    // Algo.Draw.DrawDcel(mageDCEL, "blue");
+    // Algo.Draw.DrawDcel(soldierDCEL, "red");
 
+  //  var region = findFeasibleRegion(archerDCEL)
 
-
-    var region = findFeasibleRegion(archerDCEL)
-    archerFeas = region
-    var lines = []
-    for(var i =0 ; i<region.length; i++){
-      var face = region[i]
-      var grid = Algo.gridPointsInFace(.1, 20, face)
-      lines.push(dualizePoints(grid))
+    function findCutlines(region){
+      var lines = []
+      for(var i =0 ; i<region.length; i++){
+        var face = region[i]
+        var grid = Algo.gridPointsInFace(.1, 10, face)
+        lines.push(dualizePoints(grid))
+      }
+      return lines
     }
 
-    return lines
+    return new Algo.Cut(
+        findCutlines(findFeasibleRegion(archerDCEL)),
+        findCutlines(findFeasibleRegion(soldierDCEL)),
+        findCutlines(findFeasibleRegion(mageDCEL)),
+        undefined
+    )
   }
 
   function uniteBoundingBoxes(bbox1, bbox2, bbox3){
@@ -140,7 +146,7 @@ module Algo {
 
   function dualizePoints(points: Array<TD.Position>): Array<AlgoLine>{
     if (points.length===0){
-      console.error("Request to dualize 0 points")
+      console.warn("Request to dualize 0 points")
     }
     var result: Array<AlgoLine> =[];
     for(var i = 0; i<points.length; i++){
@@ -188,10 +194,10 @@ module Algo {
 
     //relax bounding box a little (such that no intersections are actually on the boundingBox)
 
-    result.minx = result.minx - 5;
-    result.maxx = result.maxx + 5;
-    result.miny = result.miny - 5;
-    result.maxy = result.maxy + 5;
+    result.minx = result.minx - 500;//More extra x such that we get all vertical lines
+    result.maxx = result.maxx + 500; //More extra x such that we get all vertical lines
+    result.miny = result.miny - 50000;//More extra y such that we get all vertical lines
+    result.maxy = result.maxy + 50000; //More extra y such that we get all vertical lines
     return result;
     }
 
