@@ -1,9 +1,9 @@
 module Algo {
   export function aboveLine(line: TD.Line, point: TD.Position): boolean {
-    //Returns true when point is above line
+    //Returns true when point is above line (or left in the vertical case)
     var pointx = point.x
     if (line.point1.x == line.point2.x){
-      //TODO Vertical line, do stuff
+      return point.x < line.point1.x
     }
 
     if (line.point1.x < line.point2.x){
@@ -20,6 +20,7 @@ module Algo {
 
     return (point.y<liney); //< instead of > to take care of inverted y-axis
   }
+
 
   function randomPosition(width:number, height:number): TD.Position {
     var pos = new TD.Position();
@@ -465,5 +466,43 @@ module Algo {
       }
     return null;
     }
+  }
+
+  export function evaluateCut(line:TD.Line, army:Array<TD.Entity>){
+    var archerarmy: Array<TD.Archer> = [];
+    var soldierarmy: Array<TD.Soldier> = [];
+    var magearmy: Array<TD.Mage> = [];
+
+    for (var  i = 0 ; i<army.length ; i++){
+      if (army[i] instanceof TD.Archer){
+        archerarmy.push(<TD.Archer>army[i]);
+        continue;
+      }
+      if (army[i] instanceof TD.Soldier){
+        soldierarmy.push(<TD.Soldier>army[i]);
+        continue;
+      }
+      if (army[i] instanceof TD.Mage){
+        magearmy.push(<TD.Mage>army[i]);
+        continue;
+      }
+      throw new Error("Entity found that is not Soldier, Archer or Mage")
+    }
+
+    function numberAboveLine(points:Array<TD.Position>){
+      var count =0
+      for(var i=0; i<points.length; i++){
+        if (aboveLine(line, points[i])){
+          count++
+        }
+      }
+      return count
+    }
+
+    var archers = (numberAboveLine(archerarmy)== archerarmy.length/2)
+    var soldiers = (numberAboveLine(soldierarmy)== soldierarmy.length/2)
+    var mages = (numberAboveLine(magearmy)== magearmy.length/2)
+
+    return {"archers":archers, "soldiers":soldiers, "mages":mages}
   }
 }

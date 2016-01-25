@@ -18,14 +18,6 @@ module TD {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
 
-      try{
-        var debugctx = (<HTMLCanvasElement>document.getElementById("debug")).getContext("2d");
-        Algo.Draw.setCanvasContext(debugctx)
-      } catch( TypeError){
-        console.info("couldnt init debug context")
-      }
-
-
       TD.width = this.canvas.width;
       TD.height = this.canvas.height;
 
@@ -92,6 +84,41 @@ module TD {
         var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
         var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
         isCreatingLine = false;
+        var playerResult = Algo.evaluateCut(bla.playerLine, bla.things)
+
+        var main = document.getElementById("mainfb")
+        var sub = document.getElementById("subfb")
+        main.innerHTML =""
+        sub.innerHTML = ""
+
+        console.log("setting FB", playerResult)
+
+        if (playerResult.archers && playerResult.soldiers && playerResult.mages){
+          main.innerHTML = "Great cut!"
+          sub.innerHTML = "Refresh to play again"
+          return
+        }
+        if (!playerResult.archers && playerResult.soldiers && playerResult.mages){
+          main.innerHTML = "Good cut!"
+          sub.innerHTML = "Your cut didn't divide the archers"
+          return
+        }
+        if (playerResult.archers && !playerResult.soldiers && playerResult.mages){
+          main.innerHTML = "Good cut!"
+          sub.innerHTML = "Your cut didn't divide the soldiers"
+          return
+        }
+        if (playerResult.archers && playerResult.soldiers && !playerResult.mages){
+          main.innerHTML = "Good cut!"
+          sub.innerHTML = "Your cut didn't divide the mages"
+          return
+        }
+        else{
+          main.innerHTML = "Poor cut"
+          sub.innerHTML = "Use the options above to see viable cuts and try again!"
+        }
+
+
       });
 
       this.canvas.onclick = function(e) {
@@ -168,7 +195,6 @@ module TD {
           thing.draw(gcontext);
       }
     }
-
 
     click(e: MouseEvent) {
       var mouseX = e.clientX - this.canvas.getBoundingClientRect().left;
