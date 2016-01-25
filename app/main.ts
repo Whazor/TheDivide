@@ -70,7 +70,7 @@ module TD {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       var image = <HTMLImageElement>document.getElementById("imgBackground");
-      //DEBUG this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
       if((<HTMLInputElement>document.getElementById("creationline")).checked === true){
         this.ctx.beginPath();
