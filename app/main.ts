@@ -9,6 +9,8 @@ module TD {
     things: Array<Entity> = [];
     line: Line;
 
+    playerLine: Line = new Line();
+
     archerlines
 
     constructor() {
@@ -56,14 +58,50 @@ module TD {
       }
 
       //debug!
-      this.archerlines = Algo.findCut(this.things)
+      // this.archerlines = Algo.findCut(this.things)
 
 
       this.draw();
       var bla = this;
-      this.canvas.onclick = function(e) {
-        bla.click(e);
-      }
+      // this.canvas.onclick = function(e) {
+      //   bla.click(e);
+      // }
+
+
+
+      var start: Position;
+      var isCreatingLine = false;
+      console.log("faal");
+      this.canvas.addEventListener("mousedown", function(e: MouseEvent) {
+        var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
+        var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
+        start = new Position();
+        start.x = mouseX;
+        start.y = mouseY;
+        isCreatingLine = true;
+      });
+
+      this.canvas.addEventListener("mousemove", function(e: MouseEvent) {
+        var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
+        var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
+
+        var current = new Position();
+        current.x = mouseX;
+        current.y = mouseY;
+
+        if (isCreatingLine) {
+          bla.playerLine.point1 = start;
+          bla.playerLine.point2 = current;
+          bla.playerLine = TD.extendLine(bla.playerLine, TD.width, TD.height);
+        }
+        bla.draw();
+      });
+
+      this.canvas.addEventListener("mouseup", function(e: MouseEvent) {
+        var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
+        var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
+        isCreatingLine = false;
+      });
     }
 
     draw() {
@@ -79,6 +117,12 @@ module TD {
         this.ctx.stroke();
       }
 
+      if(this.playerLine && this.playerLine.point1 && this.playerLine.point2) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.playerLine.point1.x, this.playerLine.point1.y);
+        this.ctx.lineTo(this.playerLine.point2.x, this.playerLine.point2.y);
+        this.ctx.stroke();
+      }
 
       if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
         console.log("ARCHERS!", this.archerlines)

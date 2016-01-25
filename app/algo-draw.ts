@@ -5,40 +5,41 @@ module Algo{
     var ctx:CanvasRenderingContext2D;//context of the debug context
 
     export function setCanvasContext(contex:CanvasRenderingContext2D){
-      ctx = contex
+      this.ctx = contex
+      console.log(contex)
     }
 
     export function clearCanvas():void{
       // Store the current transformation matrix
-      ctx.save();
+      this.ctx.save();
 
       // Use the identity matrix while clearing the canvas
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, hsize,vsize);
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.clearRect(0, 0, hsize,vsize);
 
       // Restore the transform
-      ctx.restore();
+      this.ctx.restore();
     }
 
     export function dot( x:number,  y:number){
-      ctx.beginPath();
-      ctx.arc(x,y,.6,0,2*Math.PI);
-      ctx.fill();
+      this.ctx.beginPath();
+      this.ctx.arc(x,y,.6,0,2*Math.PI);
+      this.ctx.fill();
     }
 
     function drawEdge(edge:Halfedge){
-      ctx.beginPath()
-      ctx.moveTo(edge.fromvertex.x, edge.fromvertex.y)
-      ctx.lineTo(edge.tovertex.x, edge.tovertex.y)
-      ctx.stroke()
+      this.ctx.beginPath()
+      this.ctx.moveTo(edge.fromvertex.x, edge.fromvertex.y)
+      this.ctx.lineTo(edge.tovertex.x, edge.tovertex.y)
+      this.ctx.stroke()
     }
 
     export function drawLine(line:Algo.AlgoLine, color:string){
-      ctx.strokeStyle = color
-      ctx.beginPath()
-      ctx.moveTo(-hsize, line.heightatyaxis+ -hsize*line.slope)
-      ctx.lineTo(hsize, line.heightatyaxis + hsize*line.slope)
-      ctx.stroke()
+      this.ctx.strokeStyle = color
+      this.ctx.beginPath()
+      this.ctx.moveTo(-hsize, line.heightatyaxis+ -hsize*line.slope)
+      this.ctx.lineTo(hsize, line.heightatyaxis + hsize*line.slope)
+      this.ctx.stroke()
 
     }
 
@@ -47,8 +48,8 @@ module Algo{
       var yscalefactor = vsize/height
       console.log("xscale", xscalefactor,"yscale" ,yscalefactor)
       var scale = Math.min(xscalefactor, yscalefactor)
-      ctx.setTransform(scale,0,0,scale,0,0)
-      ctx.translate(-x,-y)
+      this.ctx.setTransform(scale,0,0,scale,0,0)
+      this.ctx.translate(-x,-y)
 
       dot(x,y)
       dot(x+width,y+height)
@@ -61,19 +62,19 @@ module Algo{
       var vertices =dcel.vertices
       var i
 
-      ctx.strokeStyle = color;
+      this.ctx.strokeStyle = color;
 
-      ctx.lineWidth= .1
-      ctx.strokeRect(bbox.minx, bbox.miny, bbox.maxx-bbox.minx, bbox.maxy - bbox.miny)
+      this.ctx.lineWidth= .1
+      this.ctx.strokeRect(bbox.minx, bbox.miny, bbox.maxx-bbox.minx, bbox.maxy - bbox.miny)
 
-      ctx.lineWidth = .2
+      this.ctx.lineWidth = .2
 
       for(i=0; i<vertices.length; i++){
-        dot(vertices[i].x, vertices[i].y)
+        this.dot(vertices[i].x, vertices[i].y)
       }
 
       for(i=0; i<edges.length; i++){
-        drawEdge(edges[i])
+        this.drawEdge(edges[i])
       }
 
     }
