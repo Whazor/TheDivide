@@ -344,7 +344,6 @@ module Algo {
     if (leftandbottomedges.length %2 == 0 ){
       throw Error("Unexpected even number of leftandbottomedges  "+ leftandbottomedges.length)
     }
-    console.log("All leftandbottomedges", leftandbottomedges)
 
     //TODO Assumption, feasibleFaces are arenged in a vertical manner!
     //TODO check whether final top edges is at top (i.e we never went left)
@@ -394,7 +393,6 @@ module Algo {
     var region2bb = region2.map(faceBoundingbox)
     var region3bb = region3.map(faceBoundingbox)
 
-    console.log(region1, region2, region3, region2bb, region3bb)
     //yintervals of these faces are disdjunct
     var region2points = []
     for (var i=0; i<points.length; i++){
@@ -419,7 +417,6 @@ module Algo {
         }
       }
     }
-    console.log("archers", points,"two types", region2points, "solutions", region3points )
     return Algo.dualizePoints(region3points)
     }
 
