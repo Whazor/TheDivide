@@ -95,6 +95,7 @@ module Algo{
    console.log("boundingBox of the face", bBox)
 
    //Then create gridPointsInFace
+   //TODO increase x by multiplication; from both sides of 0
    var gridpoints:Array<TD.Position> = []
    for(var xit=0; xit<bBox.width(); xit+=xspacing){
      for(var yit=0; yit<bBox.height(); yit+=yspacing){
