@@ -102,17 +102,19 @@ module Algo{
    var xit = xspacing
    while(xit< bBox.maxx){
      xcoords.push(xit)
-     xit = xit*2
+     xit = xit*1.5
    }
    var xit = -xspacing
    while(xit> bBox.minx){
      xcoords.push(xit)
-     xit = xit*2
+     xit = xit*1.5
    }
 
    var gridpoints:Array<TD.Position> = []
    for(var i=0; i<xcoords.length; i++){
-     for(var yit=0; yit<bBox.height(); yit+=yspacing){
+     console.log(Math.abs(xcoords[i]))
+     for(var yit=0; yit<bBox.height(); yit+=(yspacing * Math.abs(xcoords[i]) + 2 ) ){
+       //+2 to prevent trouble when the slope is 0
        var pos = new TD.Position()
        pos.x = xcoords[i]
        pos.y = bBox.miny + yit
