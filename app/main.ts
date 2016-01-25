@@ -14,7 +14,6 @@ module TD {
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
       this.ctx = this.canvas.getContext("2d");
-      console.log(this.ctx)
 
       try{
         var debugctx = (<HTMLCanvasElement>document.getElementById("debug")).getContext("2d");
@@ -57,53 +56,62 @@ module TD {
       }
 
 
-      this.draw();
+      this.draw(this.ctx);
       var bla = this;
       this.canvas.onclick = function(e) {
         bla.click(e);
       }
+
+      document.getElementById("dualplane").onchange = function(){
+        if ((<HTMLInputElement>document.getElementById("dualplane")).checked){
+          document.getElementById("debug").style.visibility = "visible"
+        } else {
+          document.getElementById("debug").style.visibility = "hidden"
+        }
+      }
+      var game = this
+      document.getElementById("archercutlines").onchange = function(){game.draw(game.ctx)}
+      document.getElementById("soldiercutlines").onchange = function(){game.draw(game.ctx)}
+      document.getElementById("magecutlines").onchange = function(){game.draw(game.ctx)}
+      document.getElementById("creationline").onchange = function(){game.draw(game.ctx)}
+
     }
 
-    draw() {
-      var context = this.ctx
+    draw(gcontext) {
       function drawLines(lines, colors){
         for (var i = 0; i < lines.length; i++){
-          context.strokeStyle =  colors[i]
+          gcontext.strokeStyle =  colors[i]
           for (var j = 0; j < lines[i].length; j++){
             var line = lines[i][j]
-            context.beginPath();
-            context.moveTo(0, line.heightatyaxis);
-            context.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
-            context.stroke();
+            gcontext.beginPath();
+            gcontext.moveTo(0, line.heightatyaxis);
+            gcontext.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
+            gcontext.stroke();
           }
         }
       }
 
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
+      gcontext.clearRect(0, 0, this.canvas.width, this.canvas.height);
       var image = <HTMLImageElement>document.getElementById("imgBackground");
-      //this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+      //gcontext.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
       if((<HTMLInputElement>document.getElementById("creationline")).checked === true){
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.line.point1.x, this.line.point1.y);
-        this.ctx.lineTo(this.line.point2.x, this.line.point2.y);
-        this.ctx.stroke();
+        gcontext.beginPath();
+        gcontext.moveTo(this.line.point1.x, this.line.point1.y);
+        gcontext.lineTo(this.line.point2.x, this.line.point2.y);
+        gcontext.stroke();
       }
 
       if (this.cut){
         if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
-          console.log("ARCHERS!", this.cut.archerlines)
           drawLines(this.cut.archerlines,
                     ["#330031","#660062","#b300ab", "#ff00f5"]) //purles
         }
         if((<HTMLInputElement>document.getElementById("soldiercutlines")).checked === true){
-          console.log("soldiers!", this.cut.soldierlines)
           drawLines(this.cut.soldierlines,
                     ["#330000","#660000","#b30000", "#ff0000"]) //reds
         }
         if((<HTMLInputElement>document.getElementById("magecutlines")).checked === true){
-          console.log("mages!", this.cut.magelines)
           drawLines(this.cut.magelines,
                     ["#000031","#000062","#0000ab", "#0000f5"]) //blues
         }
@@ -114,7 +122,7 @@ module TD {
       // draw all the things
       for (let i = 0; i < this.things.length; i++) {
           var thing = this.things[i];
-          thing.draw(this.ctx);
+          thing.draw(gcontext);
       }
     }
 
@@ -143,7 +151,7 @@ module TD {
         }
       }
 
-      this.draw();
+      this.draw(this.ctx);
     }
 
     onSelected() {

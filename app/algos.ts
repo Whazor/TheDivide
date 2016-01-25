@@ -109,7 +109,8 @@ module Algo {
 
 
     Algo.Draw.clearCanvas();
-    Algo.Draw.setViewport(bbox.minx, bbox.miny, bbox.width(), bbox.height());
+    Algo.Draw.setViewport(bbox.minx+500, bbox.miny+50000, bbox.width()-1000, bbox.height()-100000);
+      //Reduce viewport by bounding box buffer
     Algo.Draw.DrawDcel(archerDCEL, "green");
     Algo.Draw.DrawDcel(mageDCEL, "blue");
     Algo.Draw.DrawDcel(soldierDCEL, "red");
@@ -128,8 +129,8 @@ module Algo {
 
     return new Algo.Cut(
         findCutlines(findFeasibleRegion(archerDCEL)),
-        findCutlines(findFeasibleRegion(mageDCEL)),
         findCutlines(findFeasibleRegion(soldierDCEL)),
+        findCutlines(findFeasibleRegion(mageDCEL)),
         undefined
     )
   }
@@ -145,7 +146,7 @@ module Algo {
 
   function dualizePoints(points: Array<TD.Position>): Array<AlgoLine>{
     if (points.length===0){
-      console.error("Request to dualize 0 points")
+      console.warn("Request to dualize 0 points")
     }
     var result: Array<AlgoLine> =[];
     for(var i = 0; i<points.length; i++){
