@@ -185,9 +185,12 @@ module TD {
         var thing = this.things[i];
 
         var xRange = new TD.Range(thing.x-Math.floor(thing.width/2), thing.x + Math.floor(thing.width/2));
-        var yRange = new TD.Range(thing.x-Math.floor(thing.height/2), thing.x + Math.floor(thing.height/2));
+        var yRange = new TD.Range(thing.y-Math.floor(thing.height/2), thing.y + Math.floor(thing.height/2));
+
+        console.log(mouseX, mouseY);
 
         if (xRange.constains(mouseX) && yRange.constains(mouseY)) {
+          console.log("bingo", thing)
           if (this.selected.contains(thing)) {
             this.selected.remove(thing);
             thing.select(false);
