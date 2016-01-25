@@ -56,17 +56,14 @@ module TD {
           TD.swap(first, second);
       }
 
-      this.draw(this.ctx);
+      this.draw();
       var bla = this;
       // this.canvas.onclick = function(e) {
       //   bla.click(e);
       // }
 
-
-
       var start: Position;
       var isCreatingLine = false;
-      console.log("faal");
       this.canvas.addEventListener("mousedown", function(e: MouseEvent) {
         var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
         var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
@@ -117,7 +114,8 @@ module TD {
 
     }
 
-    draw(gcontext) {
+    draw() {
+      var gcontext = this.ctx;
       function drawLines(lines, colors){
         for (var i = 0; i < lines.length; i++){
           gcontext.strokeStyle =  colors[i]
