@@ -112,8 +112,8 @@ module Algo {
     Algo.Draw.clearCanvas();
     Algo.Draw.setViewport(bbox.minx, bbox.miny, bbox.width(), bbox.height());
     Algo.Draw.DrawDcel(archerDCEL, "green");
-    //Algo.Draw.DrawDcel(mageDCEL, "blue");
-    //Algo.Draw.DrawDcel(soldierDCEL, "red");
+    Algo.Draw.DrawDcel(mageDCEL, "blue");
+    Algo.Draw.DrawDcel(soldierDCEL, "red");
 
 
 
