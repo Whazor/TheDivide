@@ -58,9 +58,6 @@ module TD {
 
       this.draw(this.ctx);
       var bla = this;
-      // this.canvas.onclick = function(e) {
-      //   bla.click(e);
-      // }
 
       var start: Position;
       var isCreatingLine = false;
