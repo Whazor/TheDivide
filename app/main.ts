@@ -98,13 +98,6 @@ module TD {
         bla.click(e);
       }
 
-      document.getElementById("dualplane").onchange = function(){
-        if ((<HTMLInputElement>document.getElementById("dualplane")).checked){
-          document.getElementById("debug").style.visibility = "visible"
-        } else {
-          document.getElementById("debug").style.visibility = "hidden"
-        }
-      }
       var game = this
       document.getElementById("archercutlines").onchange = function(){game.draw(game.ctx)}
       document.getElementById("soldiercutlines").onchange = function(){game.draw(game.ctx)}

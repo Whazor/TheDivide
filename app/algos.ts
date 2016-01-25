@@ -106,13 +106,6 @@ module Algo {
     var soldierDCEL = makearrangement(dualizePoints(soldierarmy), bbox);
 
 
-    // Algo.Draw.clearCanvas();
-    // Algo.Draw.setViewport(bbox.minx+500, bbox.miny+50000, bbox.width()-1000, bbox.height()-100000);
-    //   //Reduce viewport by bounding box buffer
-    // Algo.Draw.DrawDcel(archerDCEL, "green");
-    // Algo.Draw.DrawDcel(mageDCEL, "blue");
-    // Algo.Draw.DrawDcel(soldierDCEL, "red");
-
     function findCutlines(region){
       var lines = []
       for(var i =0 ; i<region.length; i++){
