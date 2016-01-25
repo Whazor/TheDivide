@@ -95,12 +95,24 @@ module Algo{
    console.log("boundingBox of the face", bBox)
 
    //Then create gridPointsInFace
-   //TODO increase x by multiplication; from both sides of 0
+   var xcoords = [-xspacing, 0] //slopes
+   var xit = xspacing
+   while(xit< bBox.maxx){
+     xcoords.push(xit)
+     xit = xit*1.3
+   }
+   var xit = -xspacing
+   while(xit> bBox.minx){
+     xcoords.push(xit)
+     xit = xit*1.3
+   }
+   console.log("xcoords", xcoords)
+
    var gridpoints:Array<TD.Position> = []
-   for(var xit=0; xit<bBox.width(); xit+=xspacing){
+   for(var i=0; i<xcoords.length; i++){
      for(var yit=0; yit<bBox.height(); yit+=yspacing){
        var pos = new TD.Position()
-       pos.x = bBox.minx + xit
+       pos.x = xcoords[i]
        pos.y = bBox.miny + yit
        if( isInFace(pos, face)){
          gridpoints.push(pos)

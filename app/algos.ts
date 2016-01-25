@@ -120,7 +120,7 @@ module Algo {
       var lines = []
       for(var i =0 ; i<region.length; i++){
         var face = region[i]
-        var grid = Algo.gridPointsInFace(.1, 20, face)
+        var grid = Algo.gridPointsInFace(.1, 10, face)
         lines.push(dualizePoints(grid))
       }
       return lines
@@ -193,10 +193,10 @@ module Algo {
 
     //relax bounding box a little (such that no intersections are actually on the boundingBox)
 
-    result.minx = result.minx - 5;
-    result.maxx = result.maxx + 5;
-    result.miny = result.miny - 5;
-    result.maxy = result.maxy + 5;
+    result.minx = result.minx - 500;//More extra x such that we get all vertical lines
+    result.maxx = result.maxx + 500; //More extra x such that we get all vertical lines
+    result.miny = result.miny - 50000;//More extra y such that we get all vertical lines
+    result.maxy = result.maxy + 50000; //More extra y such that we get all vertical lines
     return result;
     }
 

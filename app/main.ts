@@ -65,14 +65,12 @@ module TD {
     }
 
     draw() {
-      console.log(this.ctx)
       var context = this.ctx
       function drawLines(lines, colors){
         for (var i = 0; i < lines.length; i++){
           context.strokeStyle =  colors[i]
           for (var j = 0; j < lines[i].length; j++){
             var line = lines[i][j]
-            console.log("drawing line", line)
             context.beginPath();
             context.moveTo(0, line.heightatyaxis);
             context.lineTo(TD.width, line.heightatyaxis + TD.width* line.slope);
