@@ -6,7 +6,6 @@ module Algo{
 
     export function setCanvasContext(contex:CanvasRenderingContext2D){
       this.ctx = contex
-      console.log(contex)
     }
 
     export function clearCanvas():void{
