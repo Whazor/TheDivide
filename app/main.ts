@@ -11,6 +11,8 @@ module TD {
 
     playerLine: Line = new Line();
     cut: Algo.Cut
+    selected = new collections.Set<Entity>();
+
 
     constructor() {
       this.canvas = <HTMLCanvasElement> document.getElementById("canvas");
@@ -126,21 +128,25 @@ module TD {
       }
 
       gcontext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      //background
       var image = <HTMLImageElement>document.getElementById("imgBackground");
       gcontext.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
 
       if((<HTMLInputElement>document.getElementById("creationline")).checked === true){
         gcontext.beginPath();
+        gcontext.strokeStyle = "black"
         gcontext.moveTo(this.line.point1.x, this.line.point1.y);
         gcontext.lineTo(this.line.point2.x, this.line.point2.y);
         gcontext.stroke();
       }
 
       if(this.playerLine && this.playerLine.point1 && this.playerLine.point2) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.playerLine.point1.x, this.playerLine.point1.y);
-        this.ctx.lineTo(this.playerLine.point2.x, this.playerLine.point2.y);
-        this.ctx.stroke();
+        gcontext.beginPath();
+        gcontext.strokeStyle = "black"
+        gcontext.moveTo(this.playerLine.point1.x, this.playerLine.point1.y);
+        gcontext.lineTo(this.playerLine.point2.x, this.playerLine.point2.y);
+        gcontext.stroke();
       }
 
 
@@ -163,8 +169,6 @@ module TD {
         }
       }
 
-
-
       // draw all the things
       for (let i = 0; i < this.things.length; i++) {
           var thing = this.things[i];
@@ -172,7 +176,6 @@ module TD {
       }
     }
 
-    selected = new collections.Set<Entity>();
 
     click(e: MouseEvent) {
       var mouseX = e.clientX - this.canvas.getBoundingClientRect().left;
@@ -181,8 +184,8 @@ module TD {
       for (let i = 0; i < this.things.length; i++) {
         var thing = this.things[i];
 
-        var xRange = new TD.Range(thing.x, thing.x + thing.width);
-        var yRange = new TD.Range(thing.y, thing.y + thing.height);
+        var xRange = new TD.Range(thing.x-Math.floor(thing.width/2), thing.x + Math.floor(thing.width/2));
+        var yRange = new TD.Range(thing.x-Math.floor(thing.height/2), thing.x + Math.floor(thing.height/2));
 
         if (xRange.constains(mouseX) && yRange.constains(mouseY)) {
           if (this.selected.contains(thing)) {

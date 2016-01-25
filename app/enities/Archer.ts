@@ -24,6 +24,7 @@ module TD {
                     this.width,
                     this.height);
       if (this.selected) {
+        ctx.strokeStyle = "black"
         ctx.rect(this.x - Math.floor(this.width / 2),
                  this.y - Math.floor(this.height / 2),
                  this.width,
