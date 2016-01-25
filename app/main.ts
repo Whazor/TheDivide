@@ -9,6 +9,7 @@ module TD {
     things: Array<Entity> = [];
     line: Line;
 
+    playerLine: Line = new Line();
     cut: Algo.Cut
 
     constructor() {
@@ -55,29 +56,66 @@ module TD {
           TD.swap(first, second);
       }
 
-
-      this.draw(this.ctx);
+      this.draw();
       var bla = this;
-      this.canvas.onclick = function(e) {
-        bla.click(e);
-      }
+      // this.canvas.onclick = function(e) {
+      //   bla.click(e);
+      // }
 
-      document.getElementById("dualplane").onchange = function(){
-        if ((<HTMLInputElement>document.getElementById("dualplane")).checked){
-          document.getElementById("debug").style.visibility = "visible"
-        } else {
-          document.getElementById("debug").style.visibility = "hidden"
+      var start: Position;
+      var isCreatingLine = false;
+      this.canvas.addEventListener("mousedown", function(e: MouseEvent) {
+        var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
+        var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
+        start = new Position();
+        start.x = mouseX;
+        start.y = mouseY;
+        isCreatingLine = true;
+      });
+
+      this.canvas.addEventListener("mousemove", function(e: MouseEvent) {
+        var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
+        var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
+
+        var current = new Position();
+        current.x = mouseX;
+        current.y = mouseY;
+
+        if (isCreatingLine) {
+          bla.playerLine.point1 = start;
+          bla.playerLine.point2 = current;
+          bla.playerLine = TD.extendLine(bla.playerLine, TD.width, TD.height);
         }
-      }
-      var game = this
-      document.getElementById("archercutlines").onchange = function(){game.draw(game.ctx)}
-      document.getElementById("soldiercutlines").onchange = function(){game.draw(game.ctx)}
-      document.getElementById("magecutlines").onchange = function(){game.draw(game.ctx)}
-      document.getElementById("creationline").onchange = function(){game.draw(game.ctx)}
+        bla.draw();
+      });
+
+      this.canvas.addEventListener("mouseup", function(e: MouseEvent) {
+        var mouseX = e.clientX - bla.canvas.getBoundingClientRect().left;
+        var mouseY = e.clientY - bla.canvas.getBoundingClientRect().top;
+        isCreatingLine = false;
+      });
+
+      // this.canvas.onclick = function(e) {
+      //   bla.click(e);
+      // }
+      //
+      // document.getElementById("dualplane").onchange = function(){
+      //   if ((<HTMLInputElement>document.getElementById("dualplane")).checked){
+      //     document.getElementById("debug").style.visibility = "visible"
+      //   } else {
+      //     document.getElementById("debug").style.visibility = "hidden"
+      //   }
+      // }
+      // var game = this
+      // document.getElementById("archercutlines").onchange = function(){game.draw(game.ctx)}
+      // document.getElementById("soldiercutlines").onchange = function(){game.draw(game.ctx)}
+      // document.getElementById("magecutlines").onchange = function(){game.draw(game.ctx)}
+      // document.getElementById("creationline").onchange = function(){game.draw(game.ctx)}
 
     }
 
-    draw(gcontext) {
+    draw() {
+      var gcontext = this.ctx;
       function drawLines(lines, colors){
         for (var i = 0; i < lines.length; i++){
           gcontext.strokeStyle =  colors[i]
@@ -101,6 +139,14 @@ module TD {
         gcontext.lineTo(this.line.point2.x, this.line.point2.y);
         gcontext.stroke();
       }
+
+      if(this.playerLine && this.playerLine.point1 && this.playerLine.point2) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.playerLine.point1.x, this.playerLine.point1.y);
+        this.ctx.lineTo(this.playerLine.point2.x, this.playerLine.point2.y);
+        this.ctx.stroke();
+      }
+
 
       if (this.cut){
         if((<HTMLInputElement>document.getElementById("archercutlines")).checked === true){
