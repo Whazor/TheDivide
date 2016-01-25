@@ -26,6 +26,8 @@
     <script src="app/enities/Mage.js" charset="utf-8"></script>
     <script src="app/enities/Line.js" charset="utf-8"></script>
 
+
+
     <!-- algos -->
     <script src="app/algo-helper.js" charset="utf-8"></script>
     <script src="app/dcel-helper.js" charset="utf-8"></script>
@@ -38,87 +40,30 @@
     <!-- main -->
     <script src="app/main.js" charset="utf-8"></script>
     <style type="text/css">
-        .homebtn
+        #GUI
           {
-            opacity:0.3;
+            font-family: 'VT323', arial;
+            font-size: 24pt;
           }
-        #backbtn
+        #gamebackbtn
           {
-            position: absolute;
-            top:30px;
-            right:0;
-            bottom:0;
-            left:890px;
           }
         .homebtn
           {
-            position: absolute;
-            top:0;
-            right:0;
-            bottom:0;
-            left:0;
-
-            z-index:1;
-
             width: 93px;
             height:86px;
 
             background: url("img/btn-home-01.png");
-            overflow: hidden;
             transition: all 0.2s;
           }
         .homebtn:hover, .homebtn:active
           {
-            opacity: 1.0;
             background: url("img/btn-home-02.png");
           }
-        #tempGUI
+        #timer-icon
           {
-            position: absolute;
-            top:0;
-            left:40px;
-            bottom:0;
-            right:0;
-
-            font-family: 'VT323', arial;
-            font-size: 24pt;
-            color: white;
-          }
-        #tempGUI p
-          {
-            opacity:0.3;
-            transition: all 0.2s;
-          }
-        #tempGUI p:hover
-          {
-              opacity:1.0;
-          }
-        #timer
-          {
-            position: absolute;
-            top:3px;
-          }
-        #timer img
-          {
-            position: absolute;
-            top:-3px;
-            left:170px;
-
             width: 40px;
             height: auto;
-          }
-        #timer span, #swaps span
-          {
-            font-weight:bold;
-          }
-        #timer span
-          {
-            margin-right:20px;
-          }
-        #swaps
-          {
-            position: absolute;
-            top:48px;
           }
     </style>
   </head>
@@ -143,9 +88,20 @@
     <input id="archercutlines" type='checkbox'> Archers </inpt>
     <input id="soldiercutlines" type='checkbox'> Soldiers </inpt>
     <input id="magecutlines" type='checkbox'> Mages </inpt>
-    <input id="solution" type='checkbox'> Solution </inpt>
+    <input id="solutionlines" type='checkbox'> Solution </inpt>
     <input id="creationline" type='checkbox'> Creation line </inpt>
     <input id="dualplane" type='checkbox'> Dual Plane </input>
+
+    <div id="GUI">
+        <a class="homebtn" id="gamebackbtn" href="index.html" title="Back to Main Menu"></a>
+
+      <!-- Timer.js -->
+        <p id="gameTime"><time>00:00:00</time></p>
+
+        <img id='timer-icon' src='img/clock-icon-gold.svg' />
+        <p id="timer-text">Be fast to earn more points!</p>
+      <!-- end of Timer.js -->
+    </div>
 
     <br>
 
@@ -164,4 +120,125 @@
         </div>
 
   </body>
+  <!-- GUI stuff -->
+  <script>
+        /* Add functionality that timer starts as soon as the game screen opens */
+        /* Add functionality that timer stops after line has been drawn */
+        var seconds = 0,
+            minutes = 0,
+            hours = 0,
+            totalseconds = 0,
+            t;
+
+            /* Basic timer HTML code:
+
+            <h1 id="gameTime"><time>00:00:00</time></h1>
+            <button id="start">start</button>
+            <button id="stop">stop</button>
+            <button id="clear">clear</button>
+            */
+
+        function add() {
+            console.log("exec add")
+            seconds++;
+            if (seconds >= 60) {
+                seconds = 0;
+                minutes++;
+                if (minutes >= 60) {
+                    minutes = 0;
+                    hours++;
+                }
+            }
+
+            /* user 01-09 instead of 1-9 (double digits) */
+            document.getElementById('gameTime').textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+
+            //do scoring
+            totalseconds++;
+            if (totalseconds >= 0 && totalseconds < 11) {
+              /* gold tier */
+              document.getElementById('timer-icon').src=icons[0];
+              if (totalseconds >= 3 && totalseconds < 11) {
+                /*after 3 seconds, change timer note */
+                document.getElementById('timer-text').innerHTML=tnotes[0];
+              }
+            } else if (totalseconds > 10 && totalseconds < 31) {
+              /* silver tier */
+              document.getElementById('timer-icon').src=icons[1];
+              document.getElementById('timer-text').innerHTML=tnotes[1];
+            } else if (totalseconds > 30 && totalseconds < 61) {
+              /* bronze tier */
+              document.getElementById('timer-icon').src=icons[2];
+              document.getElementById('timer-text').innerHTML=tnotes[2];
+            } else {
+              /* no bonus tier */
+              document.getElementById('timer-icon').src=icons[3];
+              document.getElementById('timer-text').innerHTML=tnotes[3];
+            }
+
+
+            timer();
+        }
+
+        function timer() { /*start 1 second after pressing start */
+            t = setTimeout(add, 1000);
+        }
+
+
+
+        /* - BONUS POINTS FEATURE - */
+        /* Between  0-20 seconds: Gold Clock   -> 100 bonus points
+           Between 21-40 seconds: Silver Clock ->  50 bonus points
+           Between 41-60 seconds: Bronze Clock ->  10 bonus points
+           After 60 seconds:      Black Clock  ->   0 bonus points*/
+
+        var icons=new Array();
+        var tnotes=new Array();
+        var i=0, f=false;
+
+        icons[0] = 'img/clock-icon-gold.svg';
+        icons[1] = 'img/clock-icon-silver.svg';
+        icons[2] = 'img/clock-icon-bronze.svg';
+        icons[3] = 'img/clock-icon-black.svg';
+
+        tnotes[0] = 'Current bonus: 100 bonus';
+        tnotes[1] = 'Current bonus: 50 bonus';
+        tnotes[2] = 'Current bonus: 10 bonus';
+        tnotes[3] = 'no bonus';
+
+
+        /* default score HTML code:
+        <img id='timer-icon' src='img/time-01.png' />
+        <p>Be fast to maximize your bonus!</p>
+
+        */
+
+
+
+        window.onload = add;
+        /* hide control panel for now */
+
+        /* Start button */
+        /*
+        document.getElementById('start').onclick = add
+        */
+
+        /* Stop button */
+        /*
+        document.getElementById('stop').onclick = function() {
+            clearTimeout(t);
+        }
+        */
+
+        /* Clear button */
+        /*
+        document.getElementById('clear').onclick = function() {
+            document.getElementById('gameTime').textContent = "00:00:00";
+            seconds = 0; minutes = 0; hours = 0, totalseconds = 0;
+
+            document.getElementById('timer-text').innerHTML='Be fast to earn more points!';
+            document.getElementById('timer-icon').src='img/clock-icon-gold.svg';
+        }
+        */
+  </script>
 </html>
